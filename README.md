@@ -5,6 +5,7 @@ IRODS module for iPlant collaboration.
 ## Installation
 
 To install:
+- ```git clone https://github.com/stharrold/irods_module_iplant.git```
 - ```cp -r irods_module_iplant/iplant $IRODS/modules/iplant```
 - ```cp $IRODS/modules/iplant/rules/iplant.re $IRODS/server/reConfig/.```
 - ```cp $IRODS/modules/iplant/rules/iplant.py $IRODS/server/bin/cmd/.```
