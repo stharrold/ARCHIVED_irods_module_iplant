@@ -1,0 +1,8 @@
+Name:		iplant
+Brief:		Rules for managing iPlant collection.
+Description:	Rules for managing iPlant collection containing fastq files. Fastq files are compressed for archival storage and to minimize bandwidth during replication.
+Dependencies:
+Enabled:	yes
+Creator:	Samuel Harrold; Texas Advanced Computing Center, UT Austin, TX
+Created:	October 2014
+License:	MIT
