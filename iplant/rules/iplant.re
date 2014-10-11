@@ -1,12 +1,12 @@
-acPostProcForPut {
-  iplantPostProcForPut;
-  myTestRule;
+iplant {
+    postProcForPut;
+    myTestRule;
 }
 
-iplantPostProcForPut {
-  ON($objPath like "\*.fastq") {
-    writeLine("serverLog", "File $objPath");
-  }
+postProcForPut {
+    ON($objPath like "\*fastq") {
+	writeLine("serverLog", "File $objPath");
+    }
 }
 
 myTestRule {
@@ -21,8 +21,8 @@ myTestRule {
 #Output from running the example is:
 #  Command result is
 #  Hello world written from irods
-   msiExecCmd(*Cmd,*Arg,"null","null","null",*Result);
-   msiGetStdoutInExecCmdOut(*Result,*Out);
-   writeLine("stdout","Command result is");
-   writeLine("stdout","*Out");
+    msiExecCmd("hello","written","null","null","null",*Result);
+    msiGetStdoutInExecCmdOut(*Result,*Out);
+    writeLine("stdout","Command result is");
+    writeLine("stdout","*Out");
 }

@@ -9,6 +9,16 @@ To install:
 - ```cp -r irods_module_iplant/iplant $IRODS/modules/.```
 - ```cp $IRODS/modules/iplant/rules/iplant.re $IRODS/server/config/reConfigs/.```
 - ```cp $IRODS/modules/iplant/rules/iplant.py $IRODS/server/bin/cmd/.```
+- Call iplant from core.re:
+  - ```cp $IRODS/server/config/reConfig/core.re $IRODS/server/config/reConfig/core.re_BACKUP_YYYYMMDDTHHMMSS```
+  - Edit $IRODS/server/config/reConfig/core.re. Modify such that ```iplant``` is only called for the relevant collection:
+```bash
+acPostProcForPut {
+    ON($objPath like "/tempZone/home/rods/iplant/*") {
+        iplant;
+    }
+}
+```
 - Add iplant to server.config:
   - ```cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS```
   - Edit $IRODS/server/config/server.config: ```reRuleSet   core,iplant```
@@ -21,3 +31,4 @@ To install:
 - [iRODS v3.3.1 docs: Rules](https://wiki.irods.org/index.php/Rules)
 - [iRODS v3.3.1 docs: msiExecCmd](https://wiki.irods.org/doxygen/re_data_obj_opr_8c_a5e67b5b442a039b4ce7a81cfc708b1e3.html)
 - [iRODS forum post: "module rules target", 2010](https://groups.google.com/forum/#!searchin/irod-chat/module$20rules/irod-chat/gaBSUd0QyiQ/ECKUNLPF5ooJ)
+- [iRODS presentation, 2014: Hao Xu, "The iRODS Rule Language"](http://irods.org/wp-content/uploads/2014/06/presentation_rule_engine_irods_user_meeting_2014.pdf)
