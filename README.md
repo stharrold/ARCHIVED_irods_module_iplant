@@ -1,4 +1,4 @@
-# iplant_module
+# irods_module_iplant
 
 IRODS module for iPlant collaboration.
 
