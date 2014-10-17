@@ -1,9 +1,4 @@
-iplant {
-    postProcForPut;
-    myTestRule;
-}
-
-postProcForPut {
+iplantPostProcForPut {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant: Compressing $objPath");
 	msiExecCmd("iplant.py","--compress",$objPath,"null","null",*Result);
@@ -12,7 +7,7 @@ postProcForPut {
     }
 }
 
-postProcForPut {
+iplantPreprocForDataObjOpen {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant: Compressing $objPath");
 	msiExecCmd("iplant.py","null",$objPath,"null","null","null",*Result);
