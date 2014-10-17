@@ -4,8 +4,20 @@ iplant {
 }
 
 postProcForPut {
-    ON($objPath like "\*fastq") {
-	writeLine("serverLog", "File $objPath");
+    ON($objPath like "*.fastq") {
+	writeLine("serverLog", "iplant: Compressing $objPath");
+	msiExecCmd("iplant.py","--compress",$objPath,"null","null",*Result);
+	msiGetStdoutInExecCmdOut(*Result,*Out);
+    	writeLine("serverLog","*Out");
+    }
+}
+
+postProcForPut {
+    ON($objPath like "*.fastq") {
+	writeLine("serverLog", "iplant: Compressing $objPath");
+	msiExecCmd("iplant.py","null",$objPath,"null","null","null",*Result);
+	msiGetStdoutInExecCmdOut(*Result,*Out);
+    	writeLine("serverLog","*Out");
     }
 }
 

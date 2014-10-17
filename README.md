@@ -7,15 +7,22 @@ IRODS module for iPlant collaboration.
 To install:
 - ```git clone https://github.com/stharrold/irods_module_iplant.git```
 - ```cp -r irods_module_iplant/iplant $IRODS/modules/.```
-- ```cp $IRODS/modules/iplant/rules/iplant.re $IRODS/server/config/reConfigs/.```
-- ```cp $IRODS/modules/iplant/rules/iplant.py $IRODS/server/bin/cmd/.```
+- ```cp $IRODS/modules/iplant/rules/*.re $IRODS/server/config/reConfigs/.```
+- ```cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.```
 - Call iplant from core.re:
   - ```cp $IRODS/server/config/reConfig/core.re $IRODS/server/config/reConfig/core.re_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit $IRODS/server/config/reConfig/core.re. Modify such that ```iplant``` is only called for the relevant collection:
+  - Edit $IRODS/server/config/reConfig/core.re:
 ```bash
 acPostProcForPut {
     ON($objPath like "/tempZone/home/rods/iplant/*") {
-        iplant;
+	iplantPostProcForPut;
+    }
+}
+```
+```
+acPreprocForDataObjOpen {
+    ON($objPath like "/tempZone/home/rods/iplant/*") {
+	iplantPreprocForDataObjOpen;
     }
 }
 ```
