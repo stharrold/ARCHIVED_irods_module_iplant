@@ -13,22 +13,50 @@ To install:
   - ```cp $IRODS/server/config/reConfig/core.re $IRODS/server/config/reConfig/core.re_BACKUP_YYYYMMDDTHHMMSS```
   - Edit $IRODS/server/config/reConfig/core.re. Change objPath comparison to match collection:
 ```bash
-acPostProcForPut {
-    ON($objPath like "/tempZone/home/rods/iplant/*") {
-	iplantPostProcForPut;
-    }
-}
-```
-```
+# ORIGINAL:
+# acPreprocForDataObjOpen { }
+# iPlant:
 acPreprocForDataObjOpen {
     ON($objPath like "/tempZone/home/rods/iplant/*") {
-	iplantPreprocForDataObjOpen;
+        iplantPreprocForDataObjOpen;
     }
 }
+```
+```bash
+# ORIGINAL:
+# acPostProcForPut { }
+# iPlant:
+acPostProcForPut {
+    ON($objPath like "/tempZone/home/rods/iplant/*") {
+        iplantPostProcForPut;
+    }
+}
+```
+```bash
+# ORIGINAL:
+# acPostProcForOpen { }
+# iPlant:
+acPostProcForOpen {
+    ON($objPath like "/tempZone/home/rods/iplant/*") {
+        iplantPostProcForOpen;
+    }
+}
+```
+```bash
+# ORIGINAL:
+# acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("off"); }
+# iPlant:
+acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
 ```
 - Add iplant to server.config:
   - ```cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit $IRODS/server/config/server.config: ```reRuleSet   core,iplant```
+  - Edit $IRODS/server/config/server.config:
+```bash
+# ORIGINAL:
+# reRuleSet   core
+# iPlant:
+reRuleSet   core,iplant
+```
 - **Note:**
   - As of 2014-10-11, for iRODS v3.3.1, rules files must be copied by hand (see [iRODS forum post: "module rules target", 2010](https://groups.google.com/forum/#!searchin/irod-chat/module$20rules/irod-chat/gaBSUd0QyiQ/ECKUNLPF5ooJ)). Future iRODS releases may automatically link rules files in modules.
   - As of 2014-10-11, [iplant](iplant) does not contain microservices and does not need to be compiled as per [iRODS v3.3.1 docs: How to create a new module](https://wiki.irods.org/index.php/How_to_create_a_new_module).

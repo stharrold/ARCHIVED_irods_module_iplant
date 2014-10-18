@@ -1,35 +1,52 @@
-iplantPostProcForPut {
-    ON($objPath like "*.fastq") {
-	writeLine("serverLog", "iplant: Compressing $objPath");
-	msiExecCmd("iplant.py","--compress",$objPath,"null","null",*Result);
-	msiGetStdoutInExecCmdOut(*Result,*Out);
-    	writeLine("serverLog","*Out");
-    }
-}
+# Rules for managing iPlant iRODS collection.
+# Order of functions follows order called within $IRODS/server/config/reConfig/core.re
+# Function names follow those of $IRODS/server/config/reConfig/core.re
+# Functions call $IRODS/server/bin/cmd/iplant.py
 
+
+# PURPOSE : Decompresses files when users do iget, isync.
+# CALLED_BY : {core.re:acPreprocForDataObjOpen}
+# CALLS : {iplant.py}
+# RELATED : {iplantPostProcForPut, iplantPreprocForDataObjOpen}
 iplantPreprocForDataObjOpen {
     ON($objPath like "*.fastq") {
-	writeLine("serverLog", "iplant: Compressing $objPath");
-	msiExecCmd("iplant.py","null",$objPath,"null","null","null",*Result);
+	writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Decompressing $objPath");
+	msiExecCmd("iplant.py","--ipath $objPath --decompress","","","",*Result);
 	msiGetStdoutInExecCmdOut(*Result,*Out);
-    	writeLine("serverLog","*Out");
+    	writeLine("serverLog","iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result,*Err);
+    	writeLine("serverLog","iplant.py:stderr:*Err");
     }
 }
 
-myTestRule {
-#Input parameters are:
-#  Command to be executed located in directory irods/server/bin/cmd
-#  Optional command argument
-#  Optional host address for command execution
-#  Optional hint for remote data object path, command is executed on host where the file is stored
-#  Optional flag.  If > 0, use the resolved physical data object path as first argument
-#Output parameter is:
-#  Structure holding status, stdout, and stderr from command execution
-#Output from running the example is:
-#  Command result is
-#  Hello world written from irods
-    msiExecCmd("hello","written","null","null","null",*Result);
-    msiGetStdoutInExecCmdOut(*Result,*Out);
-    writeLine("stdout","Command result is");
-    writeLine("stdout","*Out");
+
+# PURPOSE : Compress files when users do iput.
+# CALLED_BY: {core.re:acPostProcForPut}
+# CALLS : {iplant.py}
+# RELATED : {iplantPreprocForDataObjOpen, iplantPostProcForOpen}
+iplantPostProcForPut {
+    ON($objPath like "*.fastq") {
+	writeLine("serverLog", "iplant.re:iplantPostProcForPut: Compressing $objPath");
+	msiExecCmd("iplant.py","--ipath $objPath --compress","","","",*Result);
+	msiGetStdoutInExecCmdOut(*Result,*Out);
+    	writeLine("serverLog","iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result,*Err);
+    	writeLine("serverLog","iplant.py:stderr:*Err");
+    }
+}
+
+
+# PURPOSE : Recompress files after users did iget, isync.
+# CALLED_BY: {core.re:acPostProcForOpen}
+# CALLS : {iplant.py}
+# RELATED : {iplantPreprocForDataObjOpen, iplantPostProcForPut}
+iplantPostProcForOpen {
+    ON($objPath like "*.fastq") {
+	writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Compressing $objPath");
+	msiExecCmd("iplant.py","--ipath $objPath --compress","","","",*Result);
+	msiGetStdoutInExecCmdOut(*Result,*Out);
+    	writeLine("serverLog","iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result,*Err);
+    	writeLine("serverLog","iplant.py:stderr:*Err");
+    }
 }
