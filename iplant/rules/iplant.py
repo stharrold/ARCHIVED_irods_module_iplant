@@ -41,12 +41,14 @@ def compress(ipath):
     
     """
     print("TEST: Processing file. Time estimate (min): {min}".format(min=10))
-    print("TEST: check space to move to tmp")
-    print("TEST: imv to itmp to avoid invoking iplant.re")
-    print("TEST: iget to tmp")
+    print("TEST: test imeta for IS_COMPRESSED==False, else raise IOError")
+    print("TEST: icp to itmp prefixed with iso timestamp0 to avoid invoking iplant.re")
+    print("TEST: check space to move to tmp local, delete oldest files that sum to size")
+    print("TEST: iget to tmp local")
     print("TEST: get size, checksum")
     print("TEST: gzip --fast")
-    print("TEST: iput to ipath")
+    print("TEST: iput to itmp with iso timestamp1 to avoid invoking iplant.re")
+    print("TEST: icp to ipath")
     info_msg = ("This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz.\n" +
                 "File will be decompressed upon retrieval (e.g. with iget, isync).")
     print("TEST: add info {msg}".format(msg=info_msg))
@@ -54,6 +56,7 @@ def compress(ipath):
     print("TEST: imeta ['COMPRESSION_METHOD', gzip, ]")
     print("TEST: imeta ['UNCOMPRESSED_SIZE', 100, bytes]")
     print("TEST: imeta ['UNCOMPRESSED_CHECKSUM', 12345, ]")
+    print("TEST: imeta ['ORIGINAL_FILE', itmp_timestamp0_iso.fastq, ]")
     return None
 
 
@@ -77,11 +80,10 @@ def decompress(ipath):
     
     """
     print("TEST: Processing file. Time estimate (min): {min}".format(min=10))
-    print("TEST: check space to move to tmp")
-    print("TEST: imv to itmp to avoid invoking iplant.re")
-    print("TEST: iget to tmp")
-    print("TEST: imeta get is_compressed, method, size, checksum")
-    print("TEST: check is_compressed, method, size, checksum")
+    print("TEST: test imeta for is_compressed, method, size, checksum")
+    print("TEST: icp to itmp with iso timestamp to avoid invoking iplant.re")
+    print("TEST: check space to move to tmp, delete oldest files that sum to size")
+    print("TEST: iget to tmp local")
     print("TEST: if method == gzip, gunzip; else warn")
     print("TEST: iput to ipath -f")
     info_msg = ("This file is registered under the extension .fastq and is stored internally to iRODS without compression as .fastq")
@@ -90,6 +92,7 @@ def decompress(ipath):
     print("TEST: imeta ['COMPRESSION_METHOD', null, ]")
     print("TEST: imeta ['UNCOMPRESSED_SIZE', 100, bytes]")
     print("TEST: imeta ['UNCOMPRESSED_CHECKSUM', 12345, ]")
+    print("TEST: imeta ['ORIGINAL_FILE', itmp_timestamp0_iso.fastq, ]")
     return None
 
 
