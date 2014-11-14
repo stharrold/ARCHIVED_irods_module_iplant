@@ -2,6 +2,11 @@
 # Order of functions follows order called within $IRODS/server/config/reConfig/core.re
 # Function names follow those of $IRODS/server/config/reConfig/core.re
 # Functions call $IRODS/server/bin/cmd/iplant.py
+# Functions adapted from $IRODS/clients/icommands/test/rules3.0/rulemsiExecCmd.r
+# REFERENCES:
+# [1] https://wiki.irods.org/index.php/Tutorial
+# [2] https://wiki.irods.org/index.php/Rules
+# [3] https://wiki.irods.org/doxygen/
 
 
 # PURPOSE : Decompresses files when users do iget, isync.
@@ -11,11 +16,11 @@
 iplantPreprocForDataObjOpen {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Decompressing $objPath");
-	msiExecCmd("iplant.py","--ipath $objPath --decompress","","","",*Result);
-	msiGetStdoutInExecCmdOut(*Result,*Out);
-    	writeLine("serverLog","iplant.py:stdout:*Out");
-	msiGetStderrInExecCmdOut(*Result,*Err);
-    	writeLine("serverLog","iplant.py:stderr:*Err");
+	msiExecCmd("iplant.py", "--ipath $objPath --decompress", "", "", "", *Result);
+	msiGetStdoutInExecCmdOut(*Result, *Out);
+    	writeLine("serverLog", "iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result, *Err);
+    	writeLine("serverLog", "iplant.py:stderr:*Err");
     }
 }
 
@@ -27,11 +32,11 @@ iplantPreprocForDataObjOpen {
 iplantPostProcForPut {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForPut: Compressing $objPath");
-	msiExecCmd("iplant.py","--ipath $objPath --compress","","","",*Result);
-	msiGetStdoutInExecCmdOut(*Result,*Out);
-    	writeLine("serverLog","iplant.py:stdout:*Out");
-	msiGetStderrInExecCmdOut(*Result,*Err);
-    	writeLine("serverLog","iplant.py:stderr:*Err");
+	msiExecCmd("iplant.py", "--ipath $objPath --compress", "", "", "", *Result);
+	msiGetStdoutInExecCmdOut(*Result, *Out);
+    	writeLine("serverLog", "iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result, *Err);
+    	writeLine("serverLog", "iplant.py:stderr:*Err");
     }
 }
 
@@ -43,10 +48,10 @@ iplantPostProcForPut {
 iplantPostProcForOpen {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Compressing $objPath");
-	msiExecCmd("iplant.py","--ipath $objPath --compress","","","",*Result);
-	msiGetStdoutInExecCmdOut(*Result,*Out);
-    	writeLine("serverLog","iplant.py:stdout:*Out");
-	msiGetStderrInExecCmdOut(*Result,*Err);
-    	writeLine("serverLog","iplant.py:stderr:*Err");
+	msiExecCmd("iplant.py", "--ipath $objPath --compress", "", "", "", *Result);
+	msiGetStdoutInExecCmdOut(*Result, *Out);
+    	writeLine("serverLog", "iplant.py:stdout:*Out");
+	msiGetStderrInExecCmdOut(*Result, *Err);
+    	writeLine("serverLog", "iplant.py:stderr:*Err");
     }
 }

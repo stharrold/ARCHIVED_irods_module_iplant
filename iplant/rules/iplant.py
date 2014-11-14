@@ -22,7 +22,7 @@ import argparse
 
 
 def compress(ipath):
-    """Replace file with compressed version.
+    """Replace file in iRODS with compressed version.
     
     Parameters
     ----------
@@ -36,13 +36,13 @@ def compress(ipath):
     See Also
     --------
     CALLS : {}
-    CALLED_BY : {__main__}
+    CALLED_BY : {main}
     RELATED : {decompress}
     
     """
     print("TEST: Processing file. Time estimate (min): {min}".format(min=10))
     print("TEST: check space to move to tmp")
-    print("TEST: imv to itmp")
+    print("TEST: imv to itmp to avoid invoking iplant.re")
     print("TEST: iget to tmp")
     print("TEST: get size, checksum")
     print("TEST: gzip --fast")
@@ -58,7 +58,7 @@ def compress(ipath):
 
 
 def decompress(ipath):
-    """Replace file with decompressed version.
+    """Replace file in iRODS with decompressed version.
     
     Parameters
     ----------
@@ -72,13 +72,13 @@ def decompress(ipath):
     See Also
     --------
     CALLS : {}
-    CALLED_BY : {__main__}
+    CALLED_BY : {main}
     RELATED : {compress}
     
     """
     print("TEST: Processing file. Time estimate (min): {min}".format(min=10))
     print("TEST: check space to move to tmp")
-    print("TEST: imv to itmp")
+    print("TEST: imv to itmp to avoid invoking iplant.re")
     print("TEST: iget to tmp")
     print("TEST: imeta get is_compressed, method, size, checksum")
     print("TEST: check is_compressed, method, size, checksum")
