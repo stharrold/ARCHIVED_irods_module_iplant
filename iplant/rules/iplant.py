@@ -125,6 +125,7 @@ def main(ipath, action):
     return None
 
 if __name__ == '__main__':
+    # TODO: make unit test flag
     parser = argparse.ArgumentParser(description="Compress or decompress .fastq file in iPlant collection.")
     parser.add_argument('--ipath',
                         required=True,
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     # TODO: create logger and allow command to set logger verbosity
     print("INFO: Arguments:\n{args}".format(args=args))
     # TODO: check that ipath exists
-    (, ext) = os.path.splitext(args.ipath)
+    (base, ext) = os.path.splitext(args.ipath)
     if ext != '.fastq':
         raise IOError("`ipath` file extension is not '.fastq':\n" +
                       "--ipath {ipath}".format(ipath=args.ipath))
