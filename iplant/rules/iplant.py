@@ -25,6 +25,7 @@ import pdb
 import logging
 import argparse
 import datetime
+import tempfile
 import subprocess
 
 
@@ -68,17 +69,17 @@ def _value_as_units_type(value, units):
     return typed_value
                    
 
-def _imeta_to_dict(stdout):
+def _imeta_to_dict(imeta_stdout):
     """Semi-private method to parse stdout from 'imeta ls' command into a dict of attributes.
     
     Parameters
     ----------
-    stdout : string
+    imeta_stdout : string
         stdout from 'imeta ls' command, [1]_.
     
     Returns
     -------
-    attr_dict : dict
+    imeta_dict : dict
         ``dict`` of metadata with attribute names as keys.
         Values and units are in a nested ``dict`` under the attribute name.
         Placeholder for null values is ''.
@@ -90,8 +91,8 @@ def _imeta_to_dict(stdout):
     """
     # Parse the string stdout by lines.
     # Initialize dict and flags to catch ordered metadata fields.
-    lines = stdout.split('\n')
-    attr_dict = {}
+    lines = imeta_stdout.split('\n')
+    imeta_dict = {}
     catch_attribute = True
     catch_value = False
     catch_units = False
@@ -104,7 +105,7 @@ def _imeta_to_dict(stdout):
                 raise AssertionError(("Program error. Parsed metadata field should be 'attribute'. Actual metadata:\n" +
                                       "line = {line}\n" +
                                       "field = {field}").format(line=line, field=field))
-            attr_dict[attr_name] = {}
+            imeta_dict[attr_name] = {}
             catch_attribute = False
             catch_value = True
             continue
@@ -114,7 +115,7 @@ def _imeta_to_dict(stdout):
                 raise AssertionError(("Program error. Parsed metadata field should be 'value'. Actual metadata:\n" +
                                       "line = {line}\n" +
                                       "field = {field}").format(line=line, field=field))
-            attr_dict[attr_name][field] = attr_value
+            imeta_dict[attr_name][field] = attr_value
             catch_value = False
             catch_units = True
             continue
@@ -124,9 +125,9 @@ def _imeta_to_dict(stdout):
                 raise AssertionError(("Program error. Parsed metadata field should be 'units'. Actual metadata:\n" +
                                       "line = {line}\n" +
                                       "field = {field}").format(line=line, field=field))
-            attr_dict[attr_name][field] = attr_units
-            attr_dict[attr_name]['value'] = _value_as_units_type(value=attr_dict[attr_name]['value'],
-                                                                 units=attr_dict[attr_name]['units'])
+            imeta_dict[attr_name][field] = attr_units
+            imeta_dict[attr_name]['value'] = _value_as_units_type(value=imeta_dict[attr_name]['value'],
+                                                                 units=imeta_dict[attr_name]['units'])
             catch_units = False
             catch_attribute = True
             if not (catch_attribute and not catch_value and not catch_units):
@@ -140,16 +141,23 @@ def _imeta_to_dict(stdout):
         else:
             # Otherwise line has nothing to parse.
             continue
-    return attr_dict
+    return imeta_dict
 
 
-def compress(ipath):
+def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     """Replace file in iRODS with compressed version.
     
     Parameters
     ----------
     ipath : string
-        Path to .fastq file in iRODS database.
+        iRODS path to .fastq file for (de)compression.
+    itmp_iplant : string
+        iRODS path to temporary 'iplant' directory for moving files during compression.
+    tmp_iplant : string
+        Local path to temporary 'iplant' directory for moving files during compression.
+    delete_tmp : {False, True}, bool, optional
+        Delete temporary files made during (de)compression. Compressing a file creates a compressed copy
+        and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories.
 
     Returns
     -------
@@ -160,15 +168,26 @@ def compress(ipath):
     CALLS : {}
     CALLED_BY : {main}
     RELATED : {decompress}
+
+    Notes
+    -----
+    Compressing a file creates a compressed copy and an uncompressed copy of the file in both `itmp`/iplant/
+    and local 'tmp'/iplant/ directories.
     
     """
+    # NOTE: Input checking is handled by "if __name__ == '__main__'" section and main() function.
     print("compress: TODO: Processing file. Time estimate (min): {min}".format(min=10))
     # Determine if data is compressed from imeta.
+    logger.debug("compress: imeta ls -d {ipath}".format(ipath=ipath))
     imeta_stdout = subprocess.check_output(["imeta", "ls", "-d", ipath])
-    attr_dict = _imeta_to_dict(stdout=imeta_stdout)
+    logger.debug(("compress: imeta_stdout =\n" +
+                  "{imeta_stdout}").format(imeta_stdout=imeta_stdout))
+    imeta_dict = _imeta_to_dict(imeta_stdout=imeta_stdout)
+    logger.debug(("compress: _imeta_to_dict(imeta_stdout) =\n" +
+                  "{imeta_dict}").format(imeta_dict=imeta_dict))
     do_compress = None
-    if 'IS_COMPRESSED' in attr_dict.keys():
-        if attr_dict['IS_COMPRESSED']['value']:
+    if 'IS_COMPRESSED' in imeta_dict.keys():
+        if imeta_dict['IS_COMPRESSED']['value']:
             do_compress = False
         else:
             do_compress = True
@@ -177,11 +196,13 @@ def compress(ipath):
     if do_compress is None:
         raise AssertionError(("Program error. 'do_compress' flag not set:\n" +
                               "do_compress = {dc}").format(dc=do_compress))
+    # Compress data...
     if do_compress:
-        logger.debug("compress: compressing {ipath}".format(ipath=ipath))
+        logger.debug("compress: Compressing {ipath}".format(ipath=ipath))
         timestamp = datetime.datetime.now().isoformat().replace('-', '').replace(':', '')
-        #itmp_path = os.path.
-        subprocess.check_output(["imv", ipath, itmp])
+        itmp_iplant_ipath = os.path.join(itmp_iplant, timestamp+'_'+os.path.basename(ipath))
+        logger.debug("compress: imv {ipath} {itmp_iplant_ipath}".format(ipath=ipath, itmp_iplant_ipath=itmp_iplant_ipath))
+        subprocess.check_output(["imv", ipath, itmp_iplant_ipath])
         print("TEST: imv to itmp prefixed with iso timestamp0 to avoid invoking iplant.re")
         print("TEST: check space to move to tmp local, delete oldest files that sum to size")
         print("TEST: iget to tmp local")
@@ -197,8 +218,9 @@ def compress(ipath):
         print("TEST: imeta set -d ['UNCOMPRESSED_SIZE', 100, bytes]")
         print("TEST: imeta set -d ['UNCOMPRESSED_CHECKSUM', 12345, ]")
         print("TEST: imeta set -d ['ORIGINAL_FILE', itmp_timestamp0_iso.fastq, ]")
+    # ...otherwise do nothing.
     else:
-        logger.debug("compress: skipping compress for {ipath}".format(ipath=ipath))
+        logger.debug("compress: Skipping compress for {ipath}".format(ipath=ipath))
     return None
 
 
@@ -249,9 +271,10 @@ def main(ipath, action, itmp, delete_tmp=False, logginglevel='INFO'):
         Action to take on file from `ipath`.
     itmp : string
         iRODS path to temporary directory for moving files during (de)compression.
+        Files will be created in `itmp`/iplant/ and local 'tmp'/iplant/ directories.
     delete_tmp : {False, True}, bool, optional
-        Delete temporary files made during (de)compression. Compressing a file creates
-        a compressed and a uncompressed copy of the file in both `itmp` and the local 'tmp' directory.
+        Delete temporary files made during (de)compression. Compressing a file creates a compressed copy
+        and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories.
     logginglevel : {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}, string, optional
         Verbosity of logging level. 'DEBUG' is most verbose; 'CRITICAL' is least.
         Default: 'INFO'
@@ -267,41 +290,41 @@ def main(ipath, action, itmp, delete_tmp=False, logginglevel='INFO'):
     RELATED : {}
     
     """
-    # Check input.
-    valid_actions = ['compress', 'decompress']
-    if action in valid_actions:
-        raise IOError(("Not a valid action: {act}\n" +
-                       "Valid actions: {vact}").format(act=action, vact=valid_actions))
-    valid_logginglevels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-    if logginglevel not in valid_logginglevels:
-        raise IOError(("Not a valid logging level: {ll}\n" +
-                       "Valid logging levels: {vll}").format(ll=logginglevel, vll=valid_logginglevels))
+    # NOTE: Input checking is handled by "if __name__ == '__main__'" section.
     # Set logging level and add handler.
     logger.setLevel(level=logginglevel)
     shandler = logging.StreamHandler(sys.stdout)
     logger.addHandler(shandler)
-    logger.debug("main: Added stream handler to logger.")
+    logger.debug("main: Added stdout stream handler to logger.")
+    # Check that temporary directories exist.
+    itmp_iplant = os.path.join(itmp, 'iplant')
+    try:
+        subprocess.check_output(["ils", itmp_iplant])
+    except subprocess.CalledProcessError:
+        logger.debug("main: imkdir -p {itmp_iplant}".format(itmp_iplant=itmp_iplant))
+        subprocess.check_output(["imkdir", "-p", itmp_iplant])
+    tmp_iplant = os.path.join(tempfile.gettempdir(), 'iplant')
+    if not os.path.exists(tmp_iplant):
+        logger.debug("main: os.makedirs({tmp_iplant})".format(tmp_iplant=tmp_iplant))
+        os.makedirs(tmp_iplant)
     # Perform action on file.
     if action == 'compress':
-        logger.debug("main: compressing {ipath}".format(ipath=ipath))
-        compress(ipath=ipath)
+        logger.debug("main: Compressing {ipath}".format(ipath=ipath))
+        compress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_tmp=delete_tmp)
     elif action == 'decompress':
-        logger.debug("main: decompressing {ipath}".format(ipath=ipath))
+        logger.debug("main: Decompressing {ipath}".format(ipath=ipath))
         decompress(ipath=ipath)
-    else:
-        raise 
     # Remove logging handler.
-    logger.debug("main: Removing stream handler from logger.")
+    logger.debug("main: Removing stdout stream handler from logger.")
     logger.removeHandler(shandler)
     return None
 
 
 if __name__ == '__main__':
     # Define defaults.
-    # TODO: make unit test flag
     defaults = {}
     defaults['logginglevel'] = 'INFO'
-    # Parse input arguments.
+    # Parse input arguments and check choices.
     parser = argparse.ArgumentParser(description="Compress or decompress .fastq file in iPlant collection.")
     parser.add_argument('--ipath',
                         required=True,
@@ -312,11 +335,12 @@ if __name__ == '__main__':
                         help=("Action to take on the file from `ipath`."))
     parser.add_argument('--itmp',
                         required=True,
-                        help=("iRODS path to temporary directory for moving files during (de)compression."))
+                        help=("iRODS path to temporary directory for moving files during (de)compression.\n" +
+                              "Files will be created in `itmp`/iplant/ and local 'tmp'/iplant/ directories."))
     parser.add_argument('--delete_tmp',
                         action='store_true',
-                        help=("Delete temporary files made during (de)compression. Compressing a file creates\n" +
-                              "a compressed and a uncompressed copy of the file in both `itmp` and the local 'tmp' directory."))
+                        help=("Delete temporary files made during (de)compression. (De)compressing a file creates a compressed copy\n" +
+                              "and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories."))
     parser.add_argument('--logginglevel',
                         default=defaults['logginglevel'],
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -334,4 +358,9 @@ if __name__ == '__main__':
     if ext != '.fastq':
         raise IOError(("`ipath` file extension is not '.fastq':\n" +
                        "--ipath {ipath}").format(ipath=args.ipath))
-    main(ipath=args.ipath, action=args.action, itmp=arg.itmp, delete_tmp=args.delete_tmp, logginglevel=args.logginglevel)
+    try:
+        subprocess.check_output(["ils", args.itmp])
+    except subprocess.CalledProcessError:
+        raise IOError(("`itmp` does not exist or user lacks access permission:\n" +
+                       "--itmp {itmp}").format(itmp=args.itmp))
+    main(ipath=args.ipath, action=args.action, itmp=args.itmp, delete_tmp=args.delete_tmp, logginglevel=args.logginglevel)
