@@ -22,6 +22,8 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 import pdb
+import time
+import hashlib
 import logging
 import argparse
 import datetime
@@ -55,6 +57,12 @@ def _value_as_units_type(value, units):
         'BYTES', 'Bytes', 'bytes' : '12345'                   : 12345
         'INT', 'Int', 'int'       : '12345'                   : 12345
 
+    See Also
+    --------
+    CALLS : {}
+    CALLED_BY : {_imeta_to_dict}
+    RELATED : {}
+
     """
     value = value.lower()
     units = units.lower()
@@ -83,6 +91,12 @@ def _imeta_to_dict(imeta_stdout):
         ``dict`` of metadata with attribute names as keys.
         Values and units are in a nested ``dict`` under the attribute name.
         Placeholder for null values is ''.
+
+    See Also
+    --------
+    CALLS : {_value_as_units_type}
+    CALLED_BY : {compress, decompress}
+    RELATED : {}
     
     References
     ----------
@@ -142,6 +156,57 @@ def _imeta_to_dict(imeta_stdout):
             # Otherwise line has nothing to parse.
             continue
     return imeta_dict
+
+
+def _compute_hash(fpath, algorithm='sha1', blocksize=2**16):
+    """Semi-private method to compute hash of file.
+
+    Use to check that file was not corrupted during compression. Incrementally reads files to accommodate
+    large file sizes.
+
+    Parameters
+    ----------
+    fpath : string
+        Path to local file.
+    algorithm : {'sha1'}, hashlib.algorithm, optional
+        Hashing function. Must be a `hashlib.algorithm`.
+    blocksize : {2**16}, int, optional
+        Number of bytes to read incrementally.
+
+    Returns
+    -------
+    hexdigest : string
+        Secure hash as non-binary string.
+
+    See Also
+    --------
+    CALLS : {}
+    CALLED_BY : {compress, decompress}
+    RELATED : {}
+    
+    Notes
+    -----
+    - Adapted from [1]_.
+    - Typical processing speed is ~4.4 GB/min.
+    
+    References
+    ----------
+    .. [1] http://www.pythoncentral.io/hashing-files-with-python/
+
+    """
+    # Check input.
+    if algorithm not in hashlib.algorithms:
+        raise IOError(("Algorithm not valid.\n" + 
+                       "algorithm = {alg}\n" +
+                       "valid_algorithms = {valgs}").format(alg=algorithm, valgs=hashlib.algorithms))
+    hasher = getattr(hashlib, algorithm)()
+    # Read big file incrementally to compute hash.
+    with open(fpath, 'rb') as fobj:
+        buf = fobj.read(blocksize)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = fobj.read(blocksize)
+    return hasher.hexdigest()
 
 
 def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
@@ -207,10 +272,16 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
         # TODO: check space to move to tmp local, delete oldest files that sum to size
         tmp_path = os.path.join(tmp_iplant, fname)
         logger.debug("compress: iget {itmp_path} {tmp_path}".format(itmp_path=itmp_path, tmp_path=tmp_path))
-        #subprocess.check_output(["iget", itmp_path, tmp_path])
-        print("TEST: iget to tmp local")
-        print("TEST: get size, checksum")
-        print("TEST: gzip --fast")
+        subprocess.check_output(["iget", itmp_path, tmp_path])
+        logger.debug("compress: uncompressed_size = os.path.getsize({tmp_path})".format(tmp_path=tmp_path))
+        uncompressed_size = os.path.getsize(tmp_path)
+        logger.debug("compress: uncompressed_size = {uncompressed_size}".format(uncompressed_size=uncompressed_size))
+        logger.debug("compress: uncompressed_hash = _compute_hash({tmp_path})".format(tmp_path=tmp_path))
+        uncompressed_hash = _compute_hash(fpath=tmp_path)
+        subprocess.check_output(["gzip", "--fast", "--force", tmp_path])
+        logger.debug("compress: uncompressed_hash = {uncompressed_hash}".format(uncompressed_hash=uncompressed_hash))
+        tmp_path_gz = tmp_path+'.gz'
+        # TODO: RESUME HERE with logger
         print("TEST: iput to itmp with iso timestamp1 to avoid invoking iplant.re")
         print("TEST: imv to ipath")
         info_msg = ("This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz.\n" +
@@ -294,11 +365,17 @@ def main(ipath, action, itmp, delete_tmp=False, logginglevel='INFO'):
     
     """
     # NOTE: Input checking is handled by "if __name__ == '__main__'" section.
-    # Set logging level and add handler.
+    # Set logging level, format logging, and add handler.
     logger.setLevel(level=logginglevel)
+    fmt = '"%(asctime)s","%(name)s","%(levelname)s","%(message)s"'
+    formatter = logging.Formatter(fmt=fmt)
+    formatter.converter = time.gmtime
     shandler = logging.StreamHandler(sys.stdout)
+    shandler.setFormatter(formatter)
     logger.addHandler(shandler)
-    logger.debug("main: Added stdout stream handler to logger.")
+    logger.info("main: BEGIN_LOG")
+    logger.info("main: Log format: {fmt}".format(fmt=fmt.replace('\"', '\'')))
+    logger.info("main: Log date format: default ISO 8601, UTC")
     # Check that temporary directories exist.
     itmp_iplant = os.path.join(itmp, 'iplant')
     try:
@@ -312,13 +389,15 @@ def main(ipath, action, itmp, delete_tmp=False, logginglevel='INFO'):
         os.makedirs(tmp_iplant)
     # Perform action on file.
     if action == 'compress':
-        logger.debug("main: Compressing {ipath}".format(ipath=ipath))
+        logger.debug("main: compress(ipath={ipath}, itmp_iplant={itmp_iplant}," +
+                     "tmp_iplant={tmp_iplant}, delete_tmp={delete_tmp})".format(ipath=ipath, itmp_iplant=itmp_iplant,
+                                                                                tmp_iplant=tmp_iplant, delete_tmp=delete_tmp))
         compress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_tmp=delete_tmp)
     elif action == 'decompress':
         logger.debug("main: Decompressing {ipath}".format(ipath=ipath))
         decompress(ipath=ipath)
     # Remove logging handler.
-    logger.debug("main: Removing stdout stream handler from logger.")
+    logger.debug("main: END_LOG")
     logger.removeHandler(shandler)
     return None
 
