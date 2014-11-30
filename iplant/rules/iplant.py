@@ -64,18 +64,17 @@ def _value_as_units_type(value, units):
     RELATED : {}
 
     """
-    value = value.lower()
-    units = units.lower()
+    units_lower = units.lower()
     units_to_typed_value = {'': (lambda x: None if x == '' else x),
-                            'bool': (lambda x: True if x == 'true' else False),
+                            'bool': (lambda x: True if x.lower() == 'true' else False),
                             'bytes': (lambda x: int(float(x))),
                             'int': (lambda x: int(float(x)))}
-    if units in units_to_typed_value.keys():
-        typed_value = units_to_typed_value[units](value)
+    if units_lower in units_to_typed_value.keys():
+        typed_value = units_to_typed_value[units_lower](value)
     else:
         typed_value = value
     return typed_value
-                   
+
 
 def _imeta_to_dict(imeta_stdout):
     """Semi-private method to parse stdout from 'imeta ls' command into a dict of attributes.
@@ -141,7 +140,7 @@ def _imeta_to_dict(imeta_stdout):
                                       "field = {field}").format(line=line, field=field))
             imeta_dict[attr_name][field] = attr_units
             imeta_dict[attr_name]['value'] = _value_as_units_type(value=imeta_dict[attr_name]['value'],
-                                                                 units=imeta_dict[attr_name]['units'])
+                                                                  units=imeta_dict[attr_name]['units'])
             catch_units = False
             catch_attribute = True
             if not (catch_attribute and not catch_value and not catch_units):
@@ -195,6 +194,7 @@ def _compute_hash(fpath, algorithm='sha1', blocksize=2**16):
 
     """
     # Check input.
+    algorithm = algorithm.lower()
     if algorithm not in hashlib.algorithms:
         raise IOError(("Algorithm not valid.\n" + 
                        "algorithm = {alg}\n" +
@@ -263,14 +263,17 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
                               "do_compress = {dc}").format(dc=do_compress))
     # Compress data...
     if do_compress:
-        logger.debug("compress: Compressing {ipath}".format(ipath=ipath))
+        logger.debug("compress: do_compress = {do_compress}".format(do_compress=do_compress))
         timestamp = datetime.datetime.now().isoformat().replace('-', '').replace(':', '')
         fname = timestamp+'_'+os.path.basename(ipath)
         itmp_path = os.path.join(itmp_iplant, fname)
+        tmp_path = os.path.join(tmp_iplant, fname)
+        fname_gz = fname+'.gz'
+        tmp_path_gz = tmp_path+'.gz'
+        itmp_path_gz = itmp_path+'.gz'
         logger.debug("compress: imv {ipath} {itmp_path}".format(ipath=ipath, itmp_path=itmp_path))
         subprocess.check_output(["imv", ipath, itmp_path])
         # TODO: check space to move to tmp local, delete oldest files that sum to size
-        tmp_path = os.path.join(tmp_iplant, fname)
         logger.debug("compress: iget {itmp_path} {tmp_path}".format(itmp_path=itmp_path, tmp_path=tmp_path))
         subprocess.check_output(["iget", itmp_path, tmp_path])
         logger.debug("compress: uncompressed_size = os.path.getsize({tmp_path})".format(tmp_path=tmp_path))
@@ -278,23 +281,28 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
         logger.debug("compress: uncompressed_size = {uncompressed_size}".format(uncompressed_size=uncompressed_size))
         logger.debug("compress: uncompressed_hash = _compute_hash({tmp_path})".format(tmp_path=tmp_path))
         uncompressed_hash = _compute_hash(fpath=tmp_path)
-        subprocess.check_output(["gzip", "--fast", "--force", tmp_path])
         logger.debug("compress: uncompressed_hash = {uncompressed_hash}".format(uncompressed_hash=uncompressed_hash))
-        tmp_path_gz = tmp_path+'.gz'
-        # TODO: RESUME HERE with logger
-        print("TEST: iput to itmp with iso timestamp1 to avoid invoking iplant.re")
-        print("TEST: imv to ipath")
-        info_msg = ("This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz.\n" +
-                    "File will be decompressed upon retrieval (e.g. with iget, isync).")
-        print("TEST: add info {msg}".format(msg=info_msg))
-        print("TEST: imeta set -d ['IS_COMPRESSED', True, bool]")
-        print("TEST: imeta set -d ['COMPRESSION_METHOD', gzip, ]")
-        print("TEST: imeta set -d ['UNCOMPRESSED_SIZE', 100, bytes]")
-        print("TEST: imeta set -d ['UNCOMPRESSED_CHECKSUM', 12345, ]")
-        print("TEST: imeta set -d ['ORIGINAL_FILE', itmp_timestamp0_iso.fastq, ]")
+        logger.debug("compress: gzip --fast --force --keep {tmp_path}".format(tmp_path=tmp_path))
+        subprocess.check_output(["gzip", "--fast", "--force", "--keep", tmp_path])
+        logger.debug("compress: iput {tmp_path_gz} {itmp_path_gz}".format(tmp_path_gz=tmp_path_gz, itmp_path_gz=itmp_path_gz))
+        subprocess.check_output(["iput", tmp_path_gz, itmp_path_gz])
+        logger.debug("compress: imv {itmp_path_gz} {ipath}".format(itmp_path_gz=itmp_path_gz, ipath=ipath))
+        subprocess.check_output(["imv", itmp_path_gz, ipath])
+        comments = "'This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz. This file will be decompressed upon retrieval (e.g. with iget, isync).'"
+        imeta_triplets = [('IS_COMPRESSED', 'TRUE', 'BOOL'),
+                          ('COMPRESSION_METHOD', 'GZIP', ''),
+                          ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
+                          ('UNCOMPRESSED_HASH', uncompressed_hash, ''),
+                          ('HASH_METHOD', 'SHA1', ''),
+                          ('ORIGINAL_FILE', itmp_path, ''),
+                          ('COMMENTS', comments, '')]
+        imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
+        for (attr, value, units) in imeta_triplets:
+            logger.debug("compress: imeta set -d {ipath} {attr} {value} {units}".format(ipath=ipath, attr=attr, value=value, units=units))
+            subprocess.check_output(["imeta", "set", "-d", ipath, attr, value, units])
     # ...otherwise do nothing.
     else:
-        logger.debug("compress: Skipping compress for {ipath}".format(ipath=ipath))
+        logger.debug("compress: do_compress = {do_compress}".format(do_compress=do_compress))
     return None
 
 
