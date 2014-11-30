@@ -271,6 +271,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
         fname_gz = fname+'.gz'
         tmp_path_gz = tmp_path+'.gz'
         itmp_path_gz = itmp_path+'.gz'
+        # NOTE: Use imv instead of icp since icp will invoke acPreprocForDataObjOpen
         logger.debug("compress: imv {ipath} {itmp_path}".format(ipath=ipath, itmp_path=itmp_path))
         subprocess.check_output(["imv", ipath, itmp_path])
         # TODO: check space to move to tmp local, delete oldest files that sum to size
@@ -300,6 +301,15 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
         for (attr, value, units) in imeta_triplets:
             logger.debug("compress: imeta set -d {ipath} {attr} {value} {units}".format(ipath=ipath, attr=attr, value=value, units=units))
             subprocess.check_output(["imeta", "set", "-d", ipath, attr, value, units])
+        if delete_tmp:
+            logger.debug("compress: delete_tmp = {delete_tmp}".format(delete_tmp=delete_tmp))
+            # NOTE: itmp_path_gz was moved to ipath, so itmp_path_gz does not exist.
+            for itmp in [itmp_path]:
+                logger.debug("compress: irm -f {itmp}".format(itmp=itmp))
+                subprocess.check_output(["irm", "-f", itmp])
+            for tmp in [tmp_path, tmp_path_gz]:
+                logger.debug("compress: os.remove({tmp})".format(tmp=tmp))
+                os.remove(tmp)
     # ...otherwise do nothing.
     else:
         logger.debug("compress: do_compress = {do_compress}".format(do_compress=do_compress))
