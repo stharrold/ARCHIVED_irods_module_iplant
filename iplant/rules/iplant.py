@@ -215,13 +215,13 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     Parameters
     ----------
     ipath : string
-        iRODS path to .fastq file for (de)compression.
+        iRODS path to .fastq file for compression.
     itmp_iplant : string
         iRODS path to temporary 'iplant' directory for moving files during compression.
     tmp_iplant : string
         Local path to temporary 'iplant' directory for moving files during compression.
     delete_tmp : {False, True}, bool, optional
-        Delete temporary files made during (de)compression. Compressing a file creates a compressed copy
+        Delete temporary files made during compression. Compressing a file creates a compressed copy
         and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories.
 
     Returns
@@ -241,7 +241,6 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     
     """
     # NOTE: Input checking is handled by "if __name__ == '__main__'" section and main() function.
-    print("compress: TODO: Processing file. Time estimate (min): {min}".format(min=10))
     # Determine if data is compressed from imeta.
     logger.debug("compress: imeta ls -d {ipath}".format(ipath=ipath))
     imeta_stdout = subprocess.check_output(["imeta", "ls", "-d", ipath])
@@ -250,6 +249,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     imeta_dict = _imeta_to_dict(imeta_stdout=imeta_stdout)
     logger.debug(("compress: _imeta_to_dict(imeta_stdout) =\n" +
                   "{imeta_dict}").format(imeta_dict=imeta_dict))
+    # TODO: check if parent file exists and use for compression.
     do_compress = None
     if 'IS_COMPRESSED' in imeta_dict.keys():
         if imeta_dict['IS_COMPRESSED']['value']:
@@ -260,7 +260,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
         do_compress = True
     if do_compress is None:
         raise AssertionError(("Program error. 'do_compress' flag not set:\n" +
-                              "do_compress = {dc}").format(dc=do_compress))
+                              "do_compress = {do_compress}").format(do_compress=do_compress))
     # Compress data...
     if do_compress:
         logger.debug("compress: do_compress = {do_compress}".format(do_compress=do_compress))
@@ -295,7 +295,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
                           ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
                           ('UNCOMPRESSED_HASH', uncompressed_hash, ''),
                           ('HASH_METHOD', 'SHA1', ''),
-                          ('ORIGINAL_FILE', itmp_path, ''),
+                          ('PARENT_FILE', itmp_path, ''),
                           ('COMMENTS', comments, '')]
         imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
         for (attr, value, units) in imeta_triplets:
@@ -316,13 +316,20 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     return None
 
 
-def decompress(ipath):
+def decompress(ipath, itmp_iplant, tmp_iplant, delete_tmp=False):
     """Replace file in iRODS with decompressed version.
     
     Parameters
     ----------
     ipath : string
-        Path to .fastq file in iRODS database.
+        iRODS path to .fastq file for compression.
+    itmp_iplant : string
+        iRODS path to temporary 'iplant' directory for moving files during compression.
+    tmp_iplant : string
+        Local path to temporary 'iplant' directory for moving files during compression.
+    delete_tmp : {False, True}, bool, optional
+        Delete temporary files made during decompression. Compressing a file creates a compressed copy
+        and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories.
 
     Returns
     -------
@@ -335,20 +342,92 @@ def decompress(ipath):
     RELATED : {compress}
     
     """
-    print("TEST: Processing file. Time estimate (min): {min}".format(min=10))
-    print("TEST: test imeta for is_compressed, method, size, checksum")
-    print("TEST: imv to itmp with iso timestamp to avoid invoking iplant.re")
-    print("TEST: check space to move to tmp, delete oldest files that sum to size")
-    print("TEST: iget to tmp local")
-    print("TEST: if method == gzip, gunzip; else warn")
-    print("TEST: iput to itmp then  -f")
-    info_msg = ("This file is registered under the extension .fastq and is stored internally to iRODS without compression as .fastq")
-    print("TEST: add info {msg}".format(msg=info_msg))
-    print("TEST: imeta set -d ['IS_COMPRESSED', False, bool]")
-    print("TEST: imeta set -d ['COMPRESSION_METHOD', null, ]")
-    print("TEST: imeta set -d ['UNCOMPRESSED_SIZE', 100, bytes]")
-    print("TEST: imeta set -d ['UNCOMPRESSED_CHECKSUM', 12345, ]")
-    print("TEST: imeta set -d ['ORIGINAL_FILE', itmp_timestamp0_iso.fastq, ]")
+    # NOTE: Input checking is handled by "if __name__ == '__main__'" section and main() function.
+    # Determine if data is decompressed from imeta.
+    logger.debug("decompress: imeta ls -d {ipath}".format(ipath=ipath))
+    imeta_stdout = subprocess.check_output(["imeta", "ls", "-d", ipath])
+    logger.debug(("decompress: imeta_stdout =\n" +
+                  "{imeta_stdout}").format(imeta_stdout=imeta_stdout))
+    imeta_dict = _imeta_to_dict(imeta_stdout=imeta_stdout)
+    logger.debug(("decompress: _imeta_to_dict(imeta_stdout) =\n" +
+                  "{imeta_dict}").format(imeta_dict=imeta_dict))
+    # TODO: check if parent file exists in itmp and use for decompression.
+    do_decompress = None
+    if 'IS_COMPRESSED' in imeta_dict.keys():
+        if imeta_dict['IS_COMPRESSED']['value']:
+            do_decompress = True
+        else:
+            do_decompress = False
+    else:
+        do_decompress = False
+    if do_decompress is None:
+        raise AssertionError(("Program error. 'do_decompress' flag not set:\n" +
+                              "do_decompress = {do_decompress}").format(do_decompress=do_decompress))
+    # Decompress data...
+    if do_decompress:
+        logger.debug("decompress: do_decompress = {do_decompress}".format(do_decompress=do_decompress))
+        timestamp = datetime.datetime.now().isoformat().replace('-', '').replace(':', '')
+        fname = timestamp+'_'+os.path.basename(ipath)
+        itmp_path = os.path.join(itmp_iplant, fname)
+        tmp_path = os.path.join(tmp_iplant, fname)
+        compression_method = imeta_dict['COMPRESSION_METHOD']['value']
+        valid_compression_methods = ['gzip']
+        if compression_method.lower() == 'gzip':
+            fname_gz = fname+'.gz'
+            tmp_path_gz = tmp_path+'.gz'
+            itmp_path_gz = itmp_path+'.gz'
+            # NOTE: Use imv instead of icp since icp will invoke acPreprocForDataObjOpen
+            # NOTE: File is already compressed, so rename with .gz extension when moving to temporary location.
+            logger.debug("decompress: imv {ipath} {itmp_path_gz}".format(ipath=ipath, itmp_path=itmp_path_gz))
+            subprocess.check_output(["imv", ipath, itmp_path_gz])
+            # TODO: check space to move to tmp local, delete oldest files that sum to size
+            logger.debug("decompress: iget {itmp_path_gz} {tmp_path_gz}".format(itmp_path_gz=itmp_path_gz, tmp_path_gz=tmp_path_gz))
+            subprocess.check_output(["iget", itmp_path_gz, tmp_path_gz])
+            logger.debug("decompress: gunzip --force --keep {tmp_path_gz}".format(tmp_path_gz=tmp_path_gz))
+            subprocess.check_output(["gunzip", "--force", "--keep", tmp_path_gz])
+        elif compression_method not in valid_compression_methods:
+            logger.warning(("decompress: 'COMPRESSION_METHOD' not valid. Skipping decompression.\n" +
+                            "COMPRESSION_METHOD = {cm}\n" +
+                            "valid_compression_methods = {vcm}").format(cm=compression_method, vcm=valid_compression_methods))
+        if os.path.isfile(tmp_path):
+            logger.debug("decompress: uncompressed_size = os.path.getsize({tmp_path})".format(tmp_path=tmp_path))
+            uncompressed_size = os.path.getsize(tmp_path)
+            logger.debug("decompress: uncompressed_size = {uncompressed_size}".format(uncompressed_size=uncompressed_size))
+            # TODO: check uncompressed size with imeta
+            logger.debug("decompress: uncompressed_hash = _compute_hash({tmp_path})".format(tmp_path=tmp_path))
+            uncompressed_hash = _compute_hash(fpath=tmp_path)
+            logger.debug("decompress: uncompressed_hash = {uncompressed_hash}".format(uncompressed_hash=uncompressed_hash))
+            # TODO: check uncompressed hash with imeta
+            logger.debug("decompress: iput {tmp_path} {itmp_path}".format(tmp_path=tmp_path, itmp_path=itmp_path))
+            subprocess.check_output(["iput", tmp_path, itmp_path])
+            logger.debug("decompress: imv {itmp_path} {ipath}".format(itmp_path=itmp_path, ipath=ipath))
+            subprocess.check_output(["imv", itmp_path, ipath])
+            comments = "'This file is registered under the extension .fastq and is stored internally to iRODS without compression as .fastq.'"
+            imeta_triplets = [('IS_COMPRESSED', 'FALSE', 'BOOL'),
+                              ('COMPRESSION_METHOD', '', ''),
+                              ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
+                              ('UNCOMPRESSED_HASH', uncompressed_hash, ''),
+                              ('HASH_METHOD', 'SHA1', ''),
+                              ('PARENT_FILE', itmp_path_gz, ''),
+                              ('COMMENTS', comments, '')]
+            imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
+            for (attr, value, units) in imeta_triplets:
+                logger.debug("decompress: imeta set -d {ipath} {attr} {value} {units}".format(ipath=ipath, attr=attr, value=value, units=units))
+                subprocess.check_output(["imeta", "set", "-d", ipath, attr, value, units])
+            if delete_tmp:
+                logger.debug("decompress: delete_tmp = {delete_tmp}".format(delete_tmp=delete_tmp))
+                # NOTE: itmp_path was moved to ipath, so itmp_path does not exist.
+                for itmp in [itmp_path_gz]:
+                    logger.debug("decompress: irm -f {itmp}".format(itmp=itmp))
+                    subprocess.check_output(["irm", "-f", itmp])
+                for tmp in [tmp_path, tmp_path_gz]:
+                    logger.debug("decompress: os.remove({tmp})".format(tmp=tmp))
+                    os.remove(tmp)
+        else:
+            logger.warning("TODO: ")
+    # ...otherwise do nothing.
+    else:
+        logger.debug("decompress: do_decompress = {do_decompress}")
     return None
 
 
@@ -412,8 +491,10 @@ def main(ipath, action, itmp, delete_tmp=False, logginglevel='INFO'):
                                                                                 tmp_iplant=tmp_iplant, delete_tmp=delete_tmp))
         compress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_tmp=delete_tmp)
     elif action == 'decompress':
-        logger.debug("main: Decompressing {ipath}".format(ipath=ipath))
-        decompress(ipath=ipath)
+        logger.debug("main: decompress(ipath={ipath}, itmp_iplant={itmp_iplant}," +
+                     "tmp_iplant={tmp_iplant}, delete_tmp={delete_tmp})".format(ipath=ipath, itmp_iplant=itmp_iplant,
+                                                                                tmp_iplant=tmp_iplant, delete_tmp=delete_tmp))
+        decompress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_tmp=delete_tmp)
     # Remove logging handler.
     logger.debug("main: END_LOG")
     logger.removeHandler(shandler)
@@ -439,8 +520,12 @@ if __name__ == '__main__':
                               "Files will be created in `itmp`/iplant/ and local 'tmp'/iplant/ directories."))
     parser.add_argument('--delete_tmp',
                         action='store_true',
-                        help=("Delete temporary files made during (de)compression. (De)compressing a file creates a compressed copy\n" +
-                              "and an uncompressed copy of the file in both `itmp`/iplant/ and local 'tmp'/iplant/ directories."))
+                        help=("Delete local temporary files made during (de)compression. (De)compressing a file creates\n" +
+                              "a compressed copy and an uncompressed copy of the file in the local 'tmp'/iplant/ directory."))
+    parser.add_argument('--delete_itmp',
+                        action='store_true',
+                        help=("Delete local temporary files made during (de)compression. (De)compressing a file creates\n" +
+                              "a compressed copy and an uncompressed copy of the file in the iRODS `itmp`/iplant/ directory."))
     parser.add_argument('--logginglevel',
                         default=defaults['logginglevel'],
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -463,4 +548,6 @@ if __name__ == '__main__':
     except subprocess.CalledProcessError:
         raise IOError(("`itmp` does not exist or user lacks access permission:\n" +
                        "--itmp {itmp}").format(itmp=args.itmp))
+    # TODO: modify delete_tmp_files so that only local tmp files are deleted.
+    # TODO: create delete_itmp_files so that itmp files can be deleted.
     main(ipath=args.ipath, action=args.action, itmp=args.itmp, delete_tmp=args.delete_tmp, logginglevel=args.logginglevel)
