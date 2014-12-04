@@ -51,11 +51,10 @@ def _value_as_units_type(value, units):
     typed_value : value as Python type
         Value as a Python type. Examples of accepted units and values (inputs are not case-sensitive):
         INPUT_UNITS               : INPUT_VALUE               : RETURNED_TYPED_VALUE
-        ''                        : ''                        : ``None``
+        'NONE', 'None', 'none'    : 'NONE', 'None, 'none'     : ``None``
         'BOOL', 'Bool', 'bool'    : 'TRUE', 'True', 'true'    : ``True``
         'BOOL', 'Bool', 'bool'    : 'FALSE', 'False', 'false' : ``False``
         'BYTES', 'Bytes', 'bytes' : '12345'                   : 12345
-        'INT', 'Int', 'int'       : '12345'                   : 12345
 
     See Also
     --------
@@ -65,10 +64,9 @@ def _value_as_units_type(value, units):
 
     """
     units_lower = units.lower()
-    units_to_typed_value = {'': (lambda x: None if x == '' else x),
+    units_to_typed_value = {'none': (lambda x: None if x == 'none' else x),
                             'bool': (lambda x: True if x.lower() == 'true' else False),
-                            'bytes': (lambda x: int(float(x))),
-                            'int': (lambda x: int(float(x)))}
+                            'bytes': (lambda x: int(float(x)))}
     if units_lower in units_to_typed_value.keys():
         typed_value = units_to_typed_value[units_lower](value)
     else:
@@ -89,7 +87,7 @@ def _imeta_to_dict(imeta_stdout):
     imeta_dict : dict
         ``dict`` of metadata with attribute names as keys.
         Values and units are in a nested ``dict`` under the attribute name.
-        Placeholder for null values is ''.
+        Placeholder for null values is 'NONE'.
 
     See Also
     --------
@@ -297,12 +295,12 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         # Set metadata describing compression state. Metadata must be converted to strings.
         comments = "'This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz. This file will be decompressed upon retrieval (e.g. with iget, isync).'"
         imeta_triplets = [('IS_COMPRESSED', 'TRUE', 'BOOL'),
-                          ('COMPRESSION_METHOD', 'GZIP', ''),
+                          ('COMPRESSION_METHOD', 'GZIP', 'NONE'),
                           ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
-                          ('UNCOMPRESSED_HASH', uncompressed_hash, ''),
-                          ('HASH_METHOD', 'SHA1', ''),
-                          ('PARENT_FILE', itmp_path, ''),
-                          ('COMMENTS', comments, '')]
+                          ('UNCOMPRESSED_HASH', uncompressed_hash, 'NONE'),
+                          ('HASH_METHOD', 'SHA1', 'NONE'),
+                          ('PARENT_FILE', itmp_path, 'NONE'),
+                          ('COMMENTS', comments, 'NONE')]
         imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
         for (attr, value, units) in imeta_triplets:
             logger.debug("compress: imeta set -d {ipath} {attr} {value} {units}".format(ipath=ipath, attr=attr, value=value, units=units))
@@ -391,7 +389,7 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
             fname_gz = fname+'.gz'
             tmp_path_gz = tmp_path+'.gz'
             itmp_path_gz = itmp_path+'.gz'
-            logger.debug("decompress: imv {ipath} {itmp_path_gz}".format(ipath=ipath, itmp_path=itmp_path_gz))
+            logger.debug("decompress: imv {ipath} {itmp_path_gz}".format(ipath=ipath, itmp_path_gz=itmp_path_gz))
             subprocess.check_output(["imv", ipath, itmp_path_gz])
             # TODO: check space to move to tmp local, delete oldest files that sum to size
             logger.debug("decompress: iget {itmp_path_gz} {tmp_path_gz}".format(itmp_path_gz=itmp_path_gz, tmp_path_gz=tmp_path_gz))
@@ -431,12 +429,12 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
             # Set metadata describing compression state. Metadata must be converted to strings.
             comments = "'This file is registered under the extension .fastq and is stored internally to iRODS without compression as .fastq.'"
             imeta_triplets = [('IS_COMPRESSED', 'FALSE', 'BOOL'),
-                              ('COMPRESSION_METHOD', '', ''),
+                              ('COMPRESSION_METHOD', 'NONE', 'NONE'),
                               ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
-                              ('UNCOMPRESSED_HASH', uncompressed_hash, ''),
-                              ('HASH_METHOD', hash_method_imeta, ''),
-                              ('PARENT_FILE', itmp_path_gz, ''),
-                              ('COMMENTS', comments, '')]
+                              ('UNCOMPRESSED_HASH', uncompressed_hash, 'NONE'),
+                              ('HASH_METHOD', hash_method_imeta, 'NONE'),
+                              ('PARENT_FILE', itmp_path_gz, 'NONE'),
+                              ('COMMENTS', comments, 'NONE')]
             imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
             for (attr, value, units) in imeta_triplets:
                 logger.debug("decompress: imeta set -d {ipath} {attr} {value} {units}".format(ipath=ipath, attr=attr, value=value, units=units))
