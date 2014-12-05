@@ -519,17 +519,19 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, l
         os.makedirs(tmp_iplant)
     # Perform action on file.
     if action == 'compress':
+        logger.info("main: Compressing file.")
         logger.debug(("main: compress(ipath={ip}, itmp_iplant={itip}, tmp_iplant={tip}, " +
                       "delete_itmp_files={ditf}, delete_tmp_files={dtf})").format(ip=ipath, itip=itmp_iplant, tip=tmp_iplant,
                                                                                   ditf=delete_itmp_files, dtf=delete_tmp_files))
         compress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_itmp_files=delete_itmp_files, delete_tmp_files=delete_tmp_files)
     elif action == 'decompress':
+        logger.info("main: Decompressing file.")
         logger.debug(("main: decompress(ipath={ip}, itmp_iplant={itip}, tmp_iplant={tip}, " +
                       "delete_itmp_files={ditf}, delete_tmp_files={dtf})").format(ip=ipath, itip=itmp_iplant, tip=tmp_iplant,
                                                                                   ditf=delete_itmp_files, dtf=delete_tmp_files))
         decompress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_itmp_files=delete_itmp_files, delete_tmp_files=delete_tmp_files)
     # Remove logging handler.
-    logger.debug("main: END_LOG")
+    logger.info("main: END_LOG")
     logger.removeHandler(shandler)
     return None
 

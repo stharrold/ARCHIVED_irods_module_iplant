@@ -16,7 +16,7 @@
 iplantPreprocForDataObjOpen {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Decompressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action decompress", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action decompress --logging_level DEBUG --itmp /tempZone/tmp --delete_itmp_files --delete_tmp_files", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
