@@ -7,12 +7,13 @@ IRODS module for iPlant collaboration.
 To install:
 - ```$IRODS``` is the root directory of your iRODS installation.
 - ```git clone https://github.com/stharrold/irods_module_iplant.git```
+- Edit `irods_module_iplant/iplant/rules/iplant.re` so that the `$objPath` comparison matches your collection.
 - ```cp -r irods_module_iplant/iplant $IRODS/modules/.```
 - ```cp $IRODS/modules/iplant/rules/*.re $IRODS/server/config/reConfigs/.```
 - ```cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.```
 - Call functions in iplant.re from core.re:
   - ```cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit `$IRODS/server/config/reConfigs/core.re`. Change objPath comparison to match collection:
+  - Edit `$IRODS/server/config/reConfigs/core.re` with the changes below and so that the `$objPath` comparison matches your collection:
 ```bash
 # ORIGINAL:
 # acPreprocForDataObjOpen { }
@@ -51,7 +52,7 @@ acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
 ```
 - Add iplant to server.config:
   - ```cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit `$IRODS/server/config/server.config`:
+  - Edit `$IRODS/server/config/server.config` with the changes below:
 ```bash
 # ORIGINAL:
 # reRuleSet   core
