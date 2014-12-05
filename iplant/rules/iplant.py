@@ -461,7 +461,8 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
     return None
 
 
-def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, logging_level='INFO'):
+def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False,
+         logging_level='INFO', log_file=None):
     """Top-level function for iPlant iRODS operations.
 
     Parameters
@@ -480,8 +481,10 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, l
         Delete local temporary files made during (de)compression. (De)compressing a file creates
         a compressed copy and an uncompressed copy of the file in the local 'tmp'/iplant/ directory.
     logging_level : {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}, string, optional
-        Verbosity of logging level. 'DEBUG' is most verbose; 'CRITICAL' is least.
+        Verbosity of logging level. 'DEBUG' is the most verbose; 'CRITICAL' is the least.
         Default: 'INFO'
+    log_file : {None}, string, optional
+        File path for writing log to file in addition to stdout.
     
     Returns
     -------
@@ -495,7 +498,7 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, l
     
     """
     # NOTE: Input checking is handled by "if __name__ == '__main__'" section.
-    # Set logging level, format logging, and add handler.
+    # Set logging level, format logging, and add handlers.
     logger.setLevel(level=logging_level)
     fmt = '"%(asctime)s","%(name)s","%(levelname)s","%(message)s"'
     formatter = logging.Formatter(fmt=fmt)
@@ -503,6 +506,10 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, l
     shandler = logging.StreamHandler(sys.stdout)
     shandler.setFormatter(formatter)
     logger.addHandler(shandler)
+    if log_file is not None:
+        fhandler = logging.FileHandler(filename=log_file, mode='ab')
+        fhandler.setFormatter(formatter)
+        logger.addHandler(fhandler)
     logger.info("main: BEGIN_LOG")
     logger.info("main: Log format: {fmt}".format(fmt=fmt.replace('\"', '\'')))
     logger.info("main: Log date format: default ISO 8601, UTC")
@@ -530,9 +537,11 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False, l
                       "delete_itmp_files={ditf}, delete_tmp_files={dtf})").format(ip=ipath, itip=itmp_iplant, tip=tmp_iplant,
                                                                                   ditf=delete_itmp_files, dtf=delete_tmp_files))
         decompress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_itmp_files=delete_itmp_files, delete_tmp_files=delete_tmp_files)
-    # Remove logging handler.
+    # Remove logging handlers.
     logger.info("main: END_LOG")
     logger.removeHandler(shandler)
+    if log_file is not None:
+        logger.removeHandler(fhandler)
     return None
 
 
@@ -564,8 +573,14 @@ if __name__ == '__main__':
     parser.add_argument('--logging_level',
                         default=defaults['logging_level'],
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        help=(("Verbosity of logging level. 'DEBUG' is most verbose; 'CRITICAL' is least." +
+                        help=(("Verbosity of logging level. 'DEBUG' is the most verbose; 'CRITICAL' is the least." +
                                "Default: {dflt}").format(dflt=defaults['logging_level'])))
+    parser.add_argument('--log_file',
+                        help=("File path for writing log to file in addition to stdout." +
+                              "Use to debug while running as part of iRODS process."))
+    parser.add_argument('--test', '-t',
+                        action='store_true',
+                        help=("Test that module is being called. Prints message to stdout."))
     args = parser.parse_args()
     # Check input then call main function.
     print("INFO: Arguments:\n{args}".format(args=args))
@@ -583,7 +598,10 @@ if __name__ == '__main__':
     except subprocess.CalledProcessError:
         raise IOError(("`itmp` does not exist or user lacks access permission:\n" +
                        "--itmp {itmp}").format(itmp=args.itmp))
-    main(ipath=args.ipath, action=args.action, itmp=args.itmp,
-         delete_itmp_files=args.delete_itmp_files,
-         delete_tmp_files=args.delete_tmp_files,
-         logging_level=args.logging_level)
+    if not args.test:
+        main(ipath=args.ipath, action=args.action, itmp=args.itmp,
+             delete_itmp_files=args.delete_itmp_files,
+             delete_tmp_files=args.delete_tmp_files,
+             logging_level=args.logging_level, log_file=args.log_file)
+    else:
+        print("INFO: --test flag given. Skipping call to main function.")
