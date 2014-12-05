@@ -32,7 +32,7 @@ iplantPreprocForDataObjOpen {
 iplantPostProcForPut {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForPut: Compressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action compress", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action compress --logging_level DEBUG --itmp /tempZone/tmp --delete_itmp_files --delete_tmp_files", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
@@ -48,7 +48,7 @@ iplantPostProcForPut {
 iplantPostProcForOpen {
     ON($objPath like "*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Compressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action compress", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action compress --logging_level DEBUG --itmp /tempZone/tmp --delete_itmp_files --delete_tmp_files", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
