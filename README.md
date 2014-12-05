@@ -12,7 +12,7 @@ To install:
 - ```cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.```
 - Call functions in iplant.re from core.re:
   - ```cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit $IRODS/server/config/reConfigs/core.re. Change objPath comparison to match collection:
+  - Edit `$IRODS/server/config/reConfigs/core.re`. Change objPath comparison to match collection:
 ```bash
 # ORIGINAL:
 # acPreprocForDataObjOpen { }
@@ -51,7 +51,7 @@ acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
 ```
 - Add iplant to server.config:
   - ```cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit $IRODS/server/config/server.config:
+  - Edit `$IRODS/server/config/server.config`:
 ```bash
 # ORIGINAL:
 # reRuleSet   core
