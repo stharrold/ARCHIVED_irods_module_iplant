@@ -278,8 +278,8 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         logger.debug("compress: imv {src} {dst}".format(src=ipath, dst=itmp_path))
         subprocess.check_output(["imv", ipath, itmp_path])
         # TODO: check space to move to tmp local, delete oldest files that sum to size
-        logger.debug("compress: iget {src} {dst}".format(src=itmp_path, dst=tmp_path))
-        subprocess.check_output(["iget", itmp_path, tmp_path])
+        logger.debug("compress: iget -f {src} {dst}".format(src=itmp_path, dst=tmp_path))
+        subprocess.check_output(["iget", "-f", itmp_path, tmp_path])
         logger.debug("compress: uncompressed_size = os.path.getsize({tmp_path})".format(tmp_path=tmp_path))
         uncompressed_size = os.path.getsize(tmp_path)
         logger.debug("compress: uncompressed_size = {usize}".format(usize=uncompressed_size))
@@ -392,8 +392,8 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
             logger.debug("decompress: imv {src} {dst}".format(src=ipath, dst=itmp_path_gz))
             subprocess.check_output(["imv", ipath, itmp_path_gz])
             # TODO: check space to move to tmp local, delete oldest files that sum to size
-            logger.debug("decompress: iget {src} {dst}".format(src=itmp_path_gz, dst=tmp_path_gz))
-            subprocess.check_output(["iget", itmp_path_gz, tmp_path_gz])
+            logger.debug("decompress: iget -f {src} {dst}".format(src=itmp_path_gz, dst=tmp_path_gz))
+            subprocess.check_output(["iget", "-f", itmp_path_gz, tmp_path_gz])
             logger.debug("decompress: gunzip --force --keep {tmp_path_gz}".format(tmp_path_gz=tmp_path_gz))
             subprocess.check_output(["gunzip", "--force", "--keep", tmp_path_gz])
         elif compression_method_imeta not in valid_compression_methods:

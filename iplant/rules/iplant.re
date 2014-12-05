@@ -16,7 +16,7 @@
 iplantPreprocForDataObjOpen {
     ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Decompressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action decompress --itmp /tempZone/home/tmp --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action decompress --itmp /tempZone/home/tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
@@ -32,7 +32,7 @@ iplantPreprocForDataObjOpen {
 iplantPostProcForPut {
     ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForPut: Compressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action compress --itmp /tempZone/home/tmp --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action compress --itmp /tempZone/home/tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
@@ -48,7 +48,7 @@ iplantPostProcForPut {
 iplantPostProcForOpen {
     ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
 	writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Compressing $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --action compress --itmp /tempZone/home/tmp --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
+	msiExecCmd("iplant.py", "--ipath $objPath --action compress --itmp /tempZone/home/tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
 	msiGetStdoutInExecCmdOut(*Result, *Out);
     	writeLine("serverLog", "iplant.py:stdout:*Out");
 	msiGetStderrInExecCmdOut(*Result, *Err);
