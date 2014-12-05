@@ -549,6 +549,7 @@ if __name__ == '__main__':
     # Define defaults.
     defaults = {}
     defaults['logging_level'] = 'INFO'
+    defaults['log_file'] = None
     # Parse input arguments and check choices.
     parser = argparse.ArgumentParser(description="Compress or decompress .fastq file in iPlant collection.")
     parser.add_argument('--ipath',
@@ -576,6 +577,7 @@ if __name__ == '__main__':
                         help=(("Verbosity of logging level. 'DEBUG' is the most verbose; 'CRITICAL' is the least." +
                                "Default: {dflt}").format(dflt=defaults['logging_level'])))
     parser.add_argument('--log_file',
+                        default=defaults['log_file'],
                         help=("File path for writing log to file in addition to stdout." +
                               "Use to debug while running as part of iRODS process."))
     parser.add_argument('--test', '-t',
@@ -598,6 +600,12 @@ if __name__ == '__main__':
     except subprocess.CalledProcessError:
         raise IOError(("`itmp` does not exist or user lacks access permission:\n" +
                        "--itmp {itmp}").format(itmp=args.itmp))
+    if (args.log_file is not None) and (not os.path.exists(args.log_file)):
+        print("INFO: Creating --log_file {lf}".format(lf=args.log_file))
+        dirname = os.path.dirname(args.log_file)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        open(args.log_file, 'ab').close()
     if not args.test:
         main(ipath=args.ipath, action=args.action, itmp=args.itmp,
              delete_itmp_files=args.delete_itmp_files,
