@@ -275,8 +275,8 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         itmp_path_gz = itmp_path+'.gz'
         # Move data to temporary files, record metadata on uncompressed version, then compress.
         # NOTE: Use imv instead of icp since icp will invoke acPreprocForDataObjOpen
-        logger.debug("compress: imv {src} {dst}".format(src=ipath, dst=itmp_path))
-        subprocess.check_output(["imv", ipath, itmp_path])
+        logger.debug("compress: imv -f {src} {dst}".format(src=ipath, dst=itmp_path))
+        subprocess.check_output(["imv", "-f", ipath, itmp_path])
         # TODO: check space to move to tmp local, delete oldest files that sum to size
         logger.debug("compress: iget -f {src} {dst}".format(src=itmp_path, dst=tmp_path))
         subprocess.check_output(["iget", "-f", itmp_path, tmp_path])
@@ -290,8 +290,8 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         subprocess.check_output(["gzip", "--fast", "--force", "--keep", tmp_path])
         logger.debug("compress: iput {src} {dst}".format(src=tmp_path_gz, dst=itmp_path_gz))
         subprocess.check_output(["iput", tmp_path_gz, itmp_path_gz])
-        logger.debug("compress: imv {src} {dst}".format(src=itmp_path_gz, dst=ipath))
-        subprocess.check_output(["imv", itmp_path_gz, ipath])
+        logger.debug("compress: imv -f {src} {dst}".format(src=itmp_path_gz, dst=ipath))
+        subprocess.check_output(["imv", "-f", itmp_path_gz, ipath])
         # Set metadata describing compression state. Metadata must be converted to strings.
         comments = "'This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz. This file will be decompressed upon retrieval (e.g. with iget, isync).'"
         imeta_triplets = [('IS_COMPRESSED', 'TRUE', 'BOOL'),
@@ -389,8 +389,8 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
             fname_gz = fname+'.gz'
             tmp_path_gz = tmp_path+'.gz'
             itmp_path_gz = itmp_path+'.gz'
-            logger.debug("decompress: imv {src} {dst}".format(src=ipath, dst=itmp_path_gz))
-            subprocess.check_output(["imv", ipath, itmp_path_gz])
+            logger.debug("decompress: imv -f {src} {dst}".format(src=ipath, dst=itmp_path_gz))
+            subprocess.check_output(["imv", "-f", ipath, itmp_path_gz])
             # TODO: check space to move to tmp local, delete oldest files that sum to size
             logger.debug("decompress: iget -f {src} {dst}".format(src=itmp_path_gz, dst=tmp_path_gz))
             subprocess.check_output(["iget", "-f", itmp_path_gz, tmp_path_gz])
@@ -425,8 +425,8 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
                                                                                      hmeth_im=hash_method_imeta))
             logger.debug("decompress: iput {src} {dst}".format(src=tmp_path, dst=itmp_path))
             subprocess.check_output(["iput", tmp_path, itmp_path])
-            logger.debug("decompress: imv {src} {dst}".format(src=itmp_path, dst=ipath))
-            subprocess.check_output(["imv", itmp_path, ipath])
+            logger.debug("decompress: imv -f {src} {dst}".format(src=itmp_path, dst=ipath))
+            subprocess.check_output(["imv", "-f", itmp_path, ipath])
             # Set metadata describing compression state. Metadata must be converted to strings.
             comments = "'This file is registered under the extension .fastq and is stored internally to iRODS without compression as .fastq.'"
             imeta_triplets = [('IS_COMPRESSED', 'FALSE', 'BOOL'),
