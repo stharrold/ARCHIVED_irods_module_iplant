@@ -18,7 +18,7 @@ To install:
 # acPreprocForDataObjOpen { }
 # iPlant:
 acPreprocForDataObjOpen {
-    ON($objPath like "/tempZone/home/rods/iplant/*") {
+    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
         iplantPreprocForDataObjOpen;
     }
 }
@@ -28,7 +28,7 @@ acPreprocForDataObjOpen {
 # acPostProcForPut { }
 # iPlant:
 acPostProcForPut {
-    ON($objPath like "/tempZone/home/rods/iplant/*") {
+    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
         iplantPostProcForPut;
     }
 }
@@ -38,7 +38,7 @@ acPostProcForPut {
 # acPostProcForOpen { }
 # iPlant:
 acPostProcForOpen {
-    ON($objPath like "/tempZone/home/rods/iplant/*") {
+    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
         iplantPostProcForOpen;
     }
 }
