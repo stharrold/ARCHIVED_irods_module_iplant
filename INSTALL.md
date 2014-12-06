@@ -1,6 +1,6 @@
 # INSTALL
 
-Example installation
+Example installation.
 
 ## Download and copy
 
