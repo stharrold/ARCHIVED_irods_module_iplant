@@ -1,6 +1,6 @@
 # irods_module_iplant
 
-IRODS module for iPlant collaboration.
+IRODS module for iPlant collaboration. IRODS rules compress data when ingested and decompress data when fetched.
 
 ## Installation
 
