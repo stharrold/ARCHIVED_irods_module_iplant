@@ -1,6 +1,6 @@
 # TESTING
 
-Example tests
+Example tests.
 
 ## Define paths
 
