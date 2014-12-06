@@ -28,9 +28,9 @@ date # print the current timestamp for examining the server log
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check that execution was successful.
 ```
 
-## Test `iplant.py` module
+## Test `iplant.py` with command line arguments
 
-Purpose: Test that the `$IRODS/server/bin/cmd/iplant.py` module executes. For this test, avoid invoking rules from `$IRODS/server/config/reConfigs/core.re`. Also see `iplant.py --help` to test additional `iplant.py` options.
+Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly. For this test, avoid invoking rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. Also see `iplant.py --help` to test additional `iplant.py` options.
 
 ```bash
 date # print the current timestamp for examining the server log
@@ -45,18 +45,16 @@ date # print the current timestamp for examining the server log
 
 ## Test `iplant.py` with iRODS icommands
 
-Test that the iplant.py module works when invoked by rules from core.re.
+Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when invoked by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. Also see `iplant.py --help` to test additional `iplant.py` options.
 
-```
-# BEGIN TEST_IPLANT_IRODS
-# TODO: REDO from above
-# Purpose: 
-date
+```bash
+date # print the current timestamp for examining the server log
 iput ~/irods_module_iplant/iplant/test/test1.fastq $IPLANT/.
 iget $IPLANT/test1.fastq /tmp/test1_processed.fastq
 diff ~/irods_module_iplant/iplant/test/test1.fastq /tmp/test1_fromirods.fastq
 irm -f $IPLANT/test1.fastq
+date # print the current timestamp for examining the server log
 # Read $IRODS/server/log/rodsLog.YYYY.MM.DD after timestamp from `date`.
-# Read $IPLANT_LOG after timestamp from `date`.
-# END TEST_IPLANT_IRODS
+# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check that execution was successful.
+# Read `$IPLANT_LOG` between the timestamps from `date` to check that execution was successful.
 ```
