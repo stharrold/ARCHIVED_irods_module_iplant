@@ -4,8 +4,12 @@ IRODS module for iPlant collaboration. IRODS rules compress data when ingested a
 
 ## Installation
 
-See [INSTALL.md](INSTALL.md)
+See [INSTALL.md](INSTALL.md).
 
 ## Testing
 
-See [TESTING.md](TESTING.md)
+See [TESTING.md](TESTING.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
