@@ -11,7 +11,8 @@ REPO=~/irods_module_iplant # Example local directory for cloned git repository.
 IRODS=~/iRODS # Example local root directory for iRODS installation.
 ITMP=/tempZone/tmp # Example iRODS directory to save temporary files.
 imkdir -p $ITMP # Create iRODS temporary directory.
-IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file. `iplant.py` creates parent directories as needed.
+TMP=/tmp/iplant # Example local directory to save tempoary files.
+IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file.
 IPLANT=/tempZone/home/rods/iplant # example iRODS directory to save iplant data
 ```
 
@@ -59,3 +60,12 @@ date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
 # Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 ```
+
+## Notes
+
+- `iplant.py` creates parent directories as needed for `--log_file $IPLANT_LOG`. See `iplant.py --help`
+- `iplant.py` uses the standard Python library `tempfile.tempdir` to defien the temporary directory from the environment [1]_.
+
+## References
+
+.. [1] https://docs.python.org/2/library/tempfile.html
