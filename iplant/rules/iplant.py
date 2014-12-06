@@ -518,6 +518,7 @@ def main(ipath, action, itmp, delete_itmp_files=False, delete_tmp_files=False,
     try:
         subprocess.check_output(["ils", itmp_iplant])
     except subprocess.CalledProcessError:
+        logger.info("main: {itmp_iplant} does not exist. Creating path.")
         logger.debug("main: imkdir -p {itmp_iplant}".format(itmp_iplant=itmp_iplant))
         subprocess.check_output(["imkdir", "-p", itmp_iplant])
     tmp_iplant = os.path.join(tempfile.gettempdir(), 'iplant')
