@@ -7,10 +7,10 @@ Example tests.
 Define local paths and paths within iRODS.
 
 ```bash
-REPO=~/irods_module_iplant # example local directory for cloned git repository
-IRODS=~/iRODS # example local root directory for iRODS installation
-ITMP=/tempZone/tmp # example iRODS directory to save temporary files
-IPLANT_LOG=/tmp/iplant.log # example local path to save iplant log file
+REPO=~/irods_module_iplant # Example local directory for cloned git repository.
+IRODS=~/iRODS # Example local root directory for iRODS installation.
+ITMP=/tempZone/tmp # Example iRODS directory to save temporary files.
+IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file. `iplant.py` creates parent directories as needed.
 IPLANT=/tempZone/home/rods/iplant # example iRODS directory to save iplant data
 ```
 
