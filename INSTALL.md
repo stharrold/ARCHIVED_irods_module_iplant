@@ -2,7 +2,7 @@
 
 ## Example installation
 
-Download this repository and copy files into your iRODS installation:
+Download this repository and copy files into your iRODS v3.3.1 installation:
 ```bash
 cd ~
 git clone https://github.com/stharrold/irods_module_iplant.git
@@ -13,7 +13,7 @@ cp $IRODS/modules/iplant/rules/*.re $IRODS/server/config/reConfigs/.
 cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.
 ```
 
-Backup and edit `server.config` to include rules from `iplant.re`:
+Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:
 ```bash
 cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -24,7 +24,7 @@ cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_
 reRuleSet   core,iplant
 ```
 
-Backup and edit `core.re` to call rules from `iplant.re`. Change the `$objPath` comparison to match your colletion:
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`. Change the `$objPath` comparison to match your colletion:
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
