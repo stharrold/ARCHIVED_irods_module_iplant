@@ -7,7 +7,7 @@ Example tests.
 Define local paths and paths within iRODS.
 
 ```bash
-REPO=~/irods_module_iplant # example local directory for cloned git repository.
+REPO=~/irods_module_iplant # example local directory for cloned git repository
 IRODS=~/iRODS # example local root directory for iRODS installation
 ITMP=/tempZone/tmp # example iRODS directory to save temporary files
 IPLANT_LOG=/tmp/iplant.log # example local path to save iplant log file
