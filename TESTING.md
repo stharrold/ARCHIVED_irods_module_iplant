@@ -25,7 +25,7 @@ iget $ITMP/test1_moved.fastq /tmp/.
 irm -f $ITMP/test1_moved.fastq
 rm /tmp/test1_moved.fastq
 date
-# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check that execution was successful.
+# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
 ```
 
 ## Test `iplant.py` with command line arguments
@@ -39,8 +39,8 @@ $IRODS/server/bin/cmd/iplant.py --ipath $ITMP/test1.fastq --action compress --it
 $IRODS/server/bin/cmd/iplant.py --ipath $ITMP/test1.fastq --action decompress --itmp $ITMP --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 irm -f $ITMP/test1.fastq
 date
-# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check that execution was successful.
-# Read `$IPLANT_LOG` between the timestamps from `date` to check that execution was successful.
+# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
+# Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 ```
 
 ## Test `iplant.py` with iRODS icommands
@@ -54,7 +54,6 @@ iget $IPLANT/test1.fastq /tmp/test1_processed.fastq
 diff ~/irods_module_iplant/iplant/test/test1.fastq /tmp/test1_fromirods.fastq
 irm -f $IPLANT/test1.fastq
 date
-# Read $IRODS/server/log/rodsLog.YYYY.MM.DD after timestamp from `date`.
-# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check that execution was successful.
-# Read `$IPLANT_LOG` between the timestamps from `date` to check that execution was successful.
+# Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
+# Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 ```
