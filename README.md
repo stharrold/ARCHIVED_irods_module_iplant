@@ -4,16 +4,30 @@ IRODS module for iPlant collaboration.
 
 ## Installation
 
-To install:
-- ```$IRODS``` is the root directory of your iRODS installation.
-- ```git clone https://github.com/stharrold/irods_module_iplant.git```
-- Edit `irods_module_iplant/iplant/rules/iplant.re` so that the `$objPath` comparison matches your collection.
-- ```cp -r irods_module_iplant/iplant $IRODS/modules/.```
-- ```cp $IRODS/modules/iplant/rules/*.re $IRODS/server/config/reConfigs/.```
-- ```cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.```
-- Call functions in iplant.re from core.re:
-  - ```cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit `$IRODS/server/config/reConfigs/core.re` with the changes below and so that the `$objPath` comparison matches your collection:
+Example installation:
+```bash
+cd ~
+git clone https://github.com/stharrold/irods_module_iplant.git
+IRODS=~/iRODS # root iRODS directory
+chmod +x ~/irods_module_iplant/iplant/rules/*
+cp -r ~/irods_module_iplant/iplant $IRODS/modules/.
+cp $IRODS/modules/iplant/rules/*.re $IRODS/server/config/reConfigs/.
+cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.
+```
+Backup and edit `server.config` to include rules from `iplant.re`:
+```bash
+cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS
+```
+```bash
+# ORIGINAL:
+# reRuleSet   core
+# iPlant:
+reRuleSet   core,iplant
+```
+Backup and edit `core.re` to call rules from `iplant.re`. Change the `$objPath` comparison to match your colletion:
+```bash
+cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
+```
 ```bash
 # ORIGINAL:
 # acPreprocForDataObjOpen { }
@@ -23,8 +37,7 @@ acPreprocForDataObjOpen {
         iplantPreprocForDataObjOpen;
     }
 }
-```
-```bash
+
 # ORIGINAL:
 # acPostProcForPut { }
 # iPlant:
@@ -33,8 +46,7 @@ acPostProcForPut {
         iplantPostProcForPut;
     }
 }
-```
-```bash
+
 # ORIGINAL:
 # acPostProcForOpen { }
 # iPlant:
@@ -43,21 +55,11 @@ acPostProcForOpen {
         iplantPostProcForOpen;
     }
 }
-```
-```bash
+
 # ORIGINAL:
 # acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("off"); }
 # iPlant:
 acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
-```
-- Add iplant to server.config:
-  - ```cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS```
-  - Edit `$IRODS/server/config/server.config` with the changes below:
-```bash
-# ORIGINAL:
-# reRuleSet   core
-# iPlant:
-reRuleSet   core,iplant
 ```
 - **Note:**
   - As of 2014-10-11, for iRODS v3.3.1, rules files must be copied by hand (see [iRODS forum post: "module rules target", 2010](https://groups.google.com/forum/#!searchin/irod-chat/module$20rules/irod-chat/gaBSUd0QyiQ/ECKUNLPF5ooJ)). Future iRODS releases may automatically link rules files in modules.
