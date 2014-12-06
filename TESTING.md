@@ -7,6 +7,7 @@ Example tests.
 Define local paths and paths within iRODS.
 
 ```bash
+REPO=~/irods_module_iplant # example local directory for cloned git repository.
 IRODS=~/iRODS # example local root directory for iRODS installation
 ITMP=/tempZone/tmp # example iRODS directory to save temporary files
 IPLANT_LOG=/tmp/iplant.log # example local path to save iplant log file
@@ -19,7 +20,7 @@ Test that iRODS icommands execute in the user-defined iRODS temporary directory.
 
 ```bash
 date
-iput ~/irods_module_iplant/iplant/test/test1.fastq $ITMP/.
+iput $REPO/iplant/test/test1.fastq $ITMP/.
 imv $ITMP/test1.fastq $ITMP/test1_moved.fastq # $ITMP must permit move operations
 iget $ITMP/test1_moved.fastq /tmp/.
 irm -f $ITMP/test1_moved.fastq
@@ -34,7 +35,7 @@ Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly. For t
 
 ```bash
 date
-iput ~/irods_module_iplant/iplant/test/test1.fastq $ITMP/.
+iput $REPO/iplant/test/test1.fastq $ITMP/.
 $IRODS/server/bin/cmd/iplant.py --ipath $ITMP/test1.fastq --action compress --itmp $ITMP --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 $IRODS/server/bin/cmd/iplant.py --ipath $ITMP/test1.fastq --action decompress --itmp $ITMP --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 irm -f $ITMP/test1.fastq
@@ -49,9 +50,9 @@ Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when i
 
 ```bash
 date
-iput ~/irods_module_iplant/iplant/test/test1.fastq $IPLANT/.
+iput $REPO/iplant/test/test1.fastq $IPLANT/.
 iget $IPLANT/test1.fastq /tmp/test1_processed.fastq
-diff ~/irods_module_iplant/iplant/test/test1.fastq /tmp/test1_fromirods.fastq
+diff $REPO/iplant/test/test1.fastq /tmp/test1_fromirods.fastq
 irm -f $IPLANT/test1.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
