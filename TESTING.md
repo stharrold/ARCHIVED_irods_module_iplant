@@ -14,7 +14,7 @@ imkdir -p $ITMP_IPLANT # Create iRODS temporary directory.
 TMP_IPLANT=/tmp/iplant # Example local directory to save tempoary files.
 mkdir -p $TMP_IPLANT # Create local temporary directory.
 IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file.
-IPLANT=/tempZone/home/rods/iplant # example iRODS directory to save iplant data
+IPLANT=/tempZone/home/rods/iplant # Example iRODS directory to save iplant data.
 ```
 
 ## Test iRODS temporary directory
@@ -24,7 +24,7 @@ Test that iRODS icommands execute in the user-defined iRODS temporary directory.
 ```bash
 date
 iput $REPO/iplant/test/test1.fastq $ITMP_IPLANT/.
-imv $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_moved.fastq # $ITMP_IPLANT must permit move operations
+imv $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_moved.fastq
 iget $ITMP_IPLANT/test1_moved.fastq /tmp/.
 irm -f $ITMP_IPLANT/test1_moved.fastq
 rm /tmp/test1_moved.fastq
