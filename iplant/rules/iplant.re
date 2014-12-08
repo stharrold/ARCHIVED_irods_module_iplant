@@ -14,8 +14,8 @@
 # CALLS : {iplant.py}
 # RELATED : {iplantPostProcForPut, iplantPreprocForDataObjOpen}
 iplantPreprocForDataObjOpen {
-    writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Decompressing $objPath");
-    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action decompress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log --test", "", "", "", *Result);
+    writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Calling iplant.py to decompress $objPath");
+    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action decompress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
     msiGetStdoutInExecCmdOut(*Result, *Out);
     writeLine("serverLog", "iplant.py:stdout:*Out");
     msiGetStderrInExecCmdOut(*Result, *Err);
@@ -28,8 +28,8 @@ iplantPreprocForDataObjOpen {
 # CALLS : {iplant.py}
 # RELATED : {iplantPreprocForDataObjOpen, iplantPostProcForOpen}
 iplantPostProcForPut {
-    writeLine("serverLog", "iplant.re:iplantPostProcForPut: Compressing $objPath");
-    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action compress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log --test", "", "", "", *Result);
+    writeLine("serverLog", "iplant.re:iplantPostProcForPut: Calling iplant.py to compress $objPath");
+    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action compress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
     msiGetStdoutInExecCmdOut(*Result, *Out);
     writeLine("serverLog", "iplant.py:stdout:*Out");
     msiGetStderrInExecCmdOut(*Result, *Err);
@@ -42,8 +42,8 @@ iplantPostProcForPut {
 # CALLS : {iplant.py}
 # RELATED : {iplantPreprocForDataObjOpen, iplantPostProcForPut}
 iplantPostProcForOpen {
-    writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Compressing $objPath");
-    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action compress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log --test", "", "", "", *Result);
+    writeLine("serverLog", "iplant.re:iplantPostProcForOpen: Calling iplant.py to compress $objPath");
+    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action compress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
     msiGetStdoutInExecCmdOut(*Result, *Out);
     writeLine("serverLog", "iplant.py:stdout:*Out");
     msiGetStderrInExecCmdOut(*Result, *Err);
