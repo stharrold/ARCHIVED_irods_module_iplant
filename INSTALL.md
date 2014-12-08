@@ -5,8 +5,8 @@ Example installation. See [TESTING.md](TESTING.md) to complete installation and 
 ## Download and copy
 
 - Download this repository and edit `irods_module_iplant/iplant/rules/rules.re` so that the `--iplant` option matches your collection:  
-Replace all instances of: `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
-with: `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
+Replace all instances of `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
+with `msiExecCmd("iplant.py", "--ipath $objPath --iplant /path/to/your/iplant`  
 - Copy files into your iRODS v3.3.1 installation:  
 ```bash
 cd ~
