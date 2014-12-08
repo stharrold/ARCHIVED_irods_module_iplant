@@ -521,7 +521,7 @@ def main(ipath, action, itmp_iplant, tmp_iplant,
         fhandler = logging.FileHandler(filename=log_file, mode='ab')
         fhandler.setFormatter(formatter)
         logger.addHandler(fhandler)
-    logger.info("main: BEGIN_LOG")
+    logger.info("main: BEGIN_LOGGING")
     logger.info("main: Log format: {fmt}".format(fmt=fmt.replace('\"', '\'')))
     logger.info("main: Log date format: default ISO 8601, UTC")
     # Perform action on file.
@@ -538,7 +538,7 @@ def main(ipath, action, itmp_iplant, tmp_iplant,
                                                                                   ditf=delete_itmp_files, dtf=delete_tmp_files))
         decompress(ipath=ipath, itmp_iplant=itmp_iplant, tmp_iplant=tmp_iplant, delete_itmp_files=delete_itmp_files, delete_tmp_files=delete_tmp_files)
     # Remove logging handlers.
-    logger.info("main: END_LOG")
+    logger.info("main: END_LOGGING")
     logger.removeHandler(shandler)
     if log_file is not None:
         logger.removeHandler(fhandler)
