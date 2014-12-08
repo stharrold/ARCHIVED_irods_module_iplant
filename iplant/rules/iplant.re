@@ -13,16 +13,16 @@
 # PURPOSE : Decompresses files when users do iget, isync, icp.
 # CALLED_BY : {core.re:acPreprocForDataObjOpen}
 # CALLS : {iplant.py}
-# RELATED : {iplantPostProcForPut, iplantPreprocForDataObjOpen}
+# RELATED : {iplantPostProcForPut, iplantPostProcForOpen}
+# TODO: Use ON($objPath like "/tempZone/home/rods/iplant/*") when iRODS bug resolved
+# https://github.com/stharrold/irods_module_iplant/issues/13
 iplantPreprocForDataObjOpen {
-    ON($objPath like "/tempZone/home/rods/iplant/*") {
-	writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Calling iplant.py to decompress $objPath");
-	msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action decompress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
-	msiGetStdoutInExecCmdOut(*Result, *Out);
-	writeLine("serverLog", "iplant.py:stdout:*Out");
-	msiGetStderrInExecCmdOut(*Result, *Err);
-	writeLine("serverLog", "iplant.py:stderr:*Err");
-    }
+    writeLine("serverLog", "iplant.re:iplantPreprocForDataObjOpen: Calling iplant.py to decompress $objPath");
+    msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant --action decompress --itmp_iplant /tempZone/tmp/iplant --tmp_iplant /tmp/iplant --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file /tmp/iplant/iplant.log", "", "", "", *Result);
+    msiGetStdoutInExecCmdOut(*Result, *Out);
+    writeLine("serverLog", "iplant.py:stdout:*Out");
+    msiGetStderrInExecCmdOut(*Result, *Err);
+    writeLine("serverLog", "iplant.py:stderr:*Err");
 }
 
 
