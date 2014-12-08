@@ -20,7 +20,7 @@ cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.
 
 ## Backup and edit `server.config`
 
-Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:  
+Backup and edit `$IRODS/server/config/server.config` to include rules from `$IRODS/server/config/reConfigs/iplant.re`:  
 ```bash
 cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -33,7 +33,7 @@ reRuleSet   core,iplant
 
 ## Backup and edit `core.re`
 
-Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`:  
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `$IRODS/server/config/reConfigs/iplant.re`:  
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
