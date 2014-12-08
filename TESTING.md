@@ -39,8 +39,8 @@ Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly. For t
 ```bash
 date
 iput $REPO/iplant/test/test1.fastq $ITMP_IPLANT/.
-$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action compress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
-$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action decompress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
+$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action compress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
+$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action decompress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 irm -f $ITMP_IPLANT/test1.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
