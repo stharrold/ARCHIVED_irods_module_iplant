@@ -44,7 +44,10 @@ date
 iput $REPO/iplant/test/test1.fastq $IPLANT/.
 $IRODS/server/bin/cmd/iplant.py --ipath $IPLANT/test1.fastq --iplant $IPLANT --action compress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 $IRODS/server/bin/cmd/iplant.py --ipath $IPLANT/test1.fastq --iplant $IPLANT --action decompress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
+iget $IPLANT/test1.fastq $TMP_IPLANT/test1_processed.fastq
+diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1_processed.fastq
 irm -f $IPLANT/test1.fastq
+rm -f $TMP_IPLANT/test1_processed.fastq
 date
 # Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 # Use the iPlant version of core.re from after following INSTALL.md.
