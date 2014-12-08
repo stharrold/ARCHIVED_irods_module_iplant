@@ -27,7 +27,7 @@ iput $REPO/iplant/test/test1.fastq $ITMP_IPLANT/.
 imv $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_moved.fastq
 iget $ITMP_IPLANT/test1_moved.fastq /tmp/.
 irm -f $ITMP_IPLANT/test1_moved.fastq
-rm /tmp/test1_moved.fastq
+rm -f /tmp/test1_moved.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
 ```
