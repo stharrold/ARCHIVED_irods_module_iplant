@@ -41,21 +41,15 @@ cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re
 # ORIGINAL:
 # acPreprocForDataObjOpen { }
 # IPLANT:
-acPreprocForDataObjOpen {
-    iplantPreprocForDataObjOpen;
-}
+acPreprocForDataObjOpen { iplantPreprocForDataObjOpen; }
 # ORIGINAL:
 # acPostProcForPut { }
 # IPLANT:
-acPostProcForPut {
-    iplantPostProcForPut;
-}
+acPostProcForPut { iplantPostProcForPut; }
 # ORIGINAL:
 # acPostProcForOpen { }
 # IPLANT:
-acPostProcForOpen {
-    iplantPostProcForOpen;
-}
+acPostProcForOpen { iplantPostProcForOpen; }
 # ORIGINAL:
 # acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("off"); }
 # IPLANT:
