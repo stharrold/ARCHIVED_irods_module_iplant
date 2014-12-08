@@ -19,7 +19,7 @@ IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file.
 
 ## Test iRODS temporary directory
 
-Test that iRODS icommands execute in the user-defined iRODS temporary directory. For this test, avoid invoking rules from `$IRODS/server/config/reConfigs/core.re`.
+Test that iRODS icommands execute in the user-defined iRODS temporary directory without calling rules from `$IRODS/server/config/reConfigs/iplant.re`.
 
 ```bash
 date
