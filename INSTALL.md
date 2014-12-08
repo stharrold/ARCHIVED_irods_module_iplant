@@ -42,25 +42,19 @@ cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re
 # acPreprocForDataObjOpen { }
 # IPLANT:
 acPreprocForDataObjOpen {
-    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
-        iplantPreprocForDataObjOpen;
-    }
+    iplantPreprocForDataObjOpen;
 }
 # ORIGINAL:
 # acPostProcForPut { }
 # IPLANT:
 acPostProcForPut {
-    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
-        iplantPostProcForPut;
-    }
+    iplantPostProcForPut;
 }
 # ORIGINAL:
 # acPostProcForOpen { }
 # IPLANT:
 acPostProcForOpen {
-    ON($objPath like "/tempZone/home/rods/iplant/*.fastq") {
-        iplantPostProcForOpen;
-    }
+    iplantPostProcForOpen;
 }
 # ORIGINAL:
 # acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("off"); }
