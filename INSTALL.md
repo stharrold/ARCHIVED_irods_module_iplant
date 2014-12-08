@@ -4,10 +4,10 @@ Example installation. See [TESTING.md](TESTING.md) to complete installation and 
 
 ## Download and copy
 
-- Download this repository and edit `irods_module_iplant/iplant/rules/rules.re` so that the `--iplant` option matches your colletion:  
+- Download this repository and edit `irods_module_iplant/iplant/rules/rules.re` so that the `--iplant` option matches your collection:  
 Replace all instances of: `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
 with: `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
-- Copy files into your iRODS v3.3.1 installation:
+- Copy files into your iRODS v3.3.1 installation:  
 ```bash
 cd ~
 git clone https://github.com/stharrold/irods_module_iplant.git
@@ -20,8 +20,7 @@ cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.
 
 ## Backup and edit `server.config`
 
-Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:
-
+Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:  
 ```bash
 cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -34,8 +33,7 @@ reRuleSet   core,iplant
 
 ## Backup and edit `core.re`
 
-Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`:
-
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`:  
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
