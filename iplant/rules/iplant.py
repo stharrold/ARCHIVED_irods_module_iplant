@@ -26,7 +26,6 @@ import hashlib
 import logging
 import argparse
 import datetime
-import tempfile
 import subprocess
 
 
@@ -554,17 +553,20 @@ if __name__ == '__main__':
     # Parse input arguments and check choices.
     parser = argparse.ArgumentParser(description="Compress or decompress .fastq file in iPlant collection.")
     parser.add_argument('--ipath',
-                        required=True,
+                        required=True, type=os.path.abspath,
                         help=("iRODS path to .fastq file for (de)compression."))
+    parser.add_argument('--iplant',
+                        required=True, type=os.path.abspath,
+                        help=("iRODS path to iplant root directory. Only files within this directory will be (de)compressed."))
     parser.add_argument('--action',
                         choices=['compress', 'decompress'],
                         required=True,
                         help=("Action to take on the file from `ipath`."))
     parser.add_argument('--itmp_iplant',
-                        required=True,
+                        required=True, type=os.path.abspath,
                         help=("iRODS path to temporary directory for moving files during (de)compression."))
     parser.add_argument('--tmp_iplant',
-                        required=True,
+                        required=True, type=os.path.abspath,
                         help=("Local path to temporary directory for moving files during (de)compression."))
     parser.add_argument('--delete_itmp_files',
                         action='store_true',
@@ -575,41 +577,50 @@ if __name__ == '__main__':
     parser.add_argument('--logging_level',
                         default=defaults['logging_level'],
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        help=(("Verbosity of logging level. 'DEBUG' is the most verbose; 'CRITICAL' is the least." +
+                        help=(("Verbosity of logging level. 'DEBUG' is the most verbose; 'CRITICAL' is the least. " +
                                "Default: {dflt}").format(dflt=defaults['logging_level'])))
     parser.add_argument('--log_file',
-                        default=defaults['log_file'],
-                        help=("Local path for writing log in addition to stdout." +
+                        default=defaults['log_file'], type=os.path.abspath,
+                        help=("Local path for writing log in addition to stdout. " +
                               "Use to debug while executing module with iRODS icommands."))
-    parser.add_argument('--test', '-t',
+    parser.add_argument('-t', '--test',
                         action='store_true',
-                        help=("Test that module is being called. Checks input then prints message to stdout. No actions are taken."))
+                        help=("Test that module is being called correctly. Checks input then prints message to stdout. " +
+                              "No actions are taken."))
     args = parser.parse_args()
     # Check input then call main function.
     print("INFO: Arguments:\n{args}".format(args=args))
-    try:
-        subprocess.check_output(["ils", args.ipath])
-    except subprocess.CalledProcessError:
-        raise IOError(("`ipath` does not exist or user lacks access permission:\n" +
-                       "--ipath {ipath}").format(ipath=args.ipath))
-    try:
-        subprocess.check_output(["ils", args.itmp_iplant])
-    except subprocess.CalledProcessError:
-        print("INFO: Creating --itmp_iplant {itip}".format(itip=args.itmp_iplant))
-        subprocess.check_output("imkdir -p {itip}".format(itip=args.itmp_iplant))
-    if not os.path.exists(args.tmp_iplant):
-        print("INFO: Creating --tmp_iplant {tip}".format(tip=args.tmp_iplant))
-        os.makedirs(args.tmp_iplant)
-    if (args.log_file is not None) and (not os.path.exists(args.log_file)):
-        print("INFO: Creating --log_file {lf}".format(lf=args.log_file))
-        log_file_dirname = os.path.dirname(args.log_file)
-        if not os.path.exists(log_file_dirname):
-            os.makedirs(log_file_dirname)
-        open(args.log_file, 'ab').close()
-    if not args.test:
-        main(ipath=args.ipath, action=args.action,
-             itmp_iplant=args.itmp_iplant, tmp_iplant=args.tmp_iplant,
-             delete_itmp_files=args.delete_itmp_files, delete_tmp_files=args.delete_tmp_files,
-             logging_level=args.logging_level, log_file=args.log_file)
+    if os.path.commonprefix([args.ipath, args.iplant]) == args.iplant:
+        print(("INFO: --ipath is contained within --iplant.\n" +
+               "--ipath {ipath}\n" +
+               "--iplant {iplant}").format(ipath=args.ipath, iplant=args.iplant))
+        try:
+            subprocess.check_output(["ils", args.ipath])
+        except subprocess.CalledProcessError:
+            raise IOError(("`ipath` does not exist or user lacks access permission:\n" +
+                           "--ipath {ipath}").format(ipath=args.ipath))
+        try:
+            subprocess.check_output(["ils", args.itmp_iplant])
+        except subprocess.CalledProcessError:
+            print("INFO: Creating --itmp_iplant {itip}".format(itip=args.itmp_iplant))
+            subprocess.check_output("imkdir -p {itip}".format(itip=args.itmp_iplant))
+        if not os.path.exists(args.tmp_iplant):
+            print("INFO: Creating --tmp_iplant {tip}".format(tip=args.tmp_iplant))
+            os.makedirs(args.tmp_iplant)
+        if (args.log_file is not None) and (not os.path.exists(args.log_file)):
+            print("INFO: Creating --log_file {lf}".format(lf=args.log_file))
+            log_file_dirname = os.path.dirname(args.log_file)
+            if not os.path.exists(log_file_dirname):
+                os.makedirs(log_file_dirname)
+            open(args.log_file, 'ab').close()
+        if args.test:
+            print("INFO: --test flag given. Skipping call to main function.")
+        else:
+            main(ipath=args.ipath, action=args.action,
+                 itmp_iplant=args.itmp_iplant, tmp_iplant=args.tmp_iplant,
+                 delete_itmp_files=args.delete_itmp_files, delete_tmp_files=args.delete_tmp_files,
+                 logging_level=args.logging_level, log_file=args.log_file)
     else:
-        print("INFO: --test flag given. Skipping call to main function.")
+        print(("INFO: --ipath is not contained within --iplant. Skipping call to main function.\n" +
+               "--ipath {ipath}\n" +
+               "--iplant {iplant}").format(ipath=args.ipath, iplant=args.iplant))
