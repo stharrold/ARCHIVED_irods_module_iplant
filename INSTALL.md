@@ -1,11 +1,13 @@
 # INSTALL
 
-Example installation. See [TESTING.md](TESTING.md) to complete installation and check.
+Example installation. See [TESTING.md](TESTING.md) to complete installation and test.
 
 ## Download and copy
 
-Download this repository and copy files into your iRODS v3.3.1 installation:
-
+- Download this repository and edit `irods_module_iplant/iplant/rules/rules.re` so that the `--iplant` option matches your collection:  
+Replace all instances of `msiExecCmd("iplant.py", "--ipath $objPath --iplant /tempZone/home/rods/iplant`  
+with `msiExecCmd("iplant.py", "--ipath $objPath --iplant /path/to/your/iplant`  
+- Copy files into your iRODS v3.3.1 installation:  
 ```bash
 cd ~
 git clone https://github.com/stharrold/irods_module_iplant.git
@@ -18,8 +20,7 @@ cp $IRODS/modules/iplant/rules/*.py $IRODS/server/bin/cmd/.
 
 ## Backup and edit `server.config`
 
-Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:
-
+Backup and edit `$IRODS/server/config/server.config` to include rules from `iplant.re`:  
 ```bash
 cp $IRODS/server/config/server.config $IRODS/server/config/server.config_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -32,8 +33,7 @@ reRuleSet   core,iplant
 
 ## Backup and edit `core.re`
 
-Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`. Change the `$objPath` comparison to match your colletion:
-
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `iplant.re`:  
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -74,6 +74,7 @@ acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
   - As of 2014-10-11, [iplant](iplant) does not contain microservices and does not need to be compiled as per [iRODS v3.3.1 docs: How to create a new module](https://wiki.irods.org/index.php/How_to_create_a_new_module).
 
 ## References
+
 - [iRODS v3.3.1 docs: How to create a new module](https://wiki.irods.org/index.php/How_to_create_a_new_module)
 - [iRODS v3.3.1 docs: Rules](https://wiki.irods.org/index.php/Rules)
 - [iRODS v3.3.1 docs: msiExecCmd](https://wiki.irods.org/doxygen/re_data_obj_opr_8c_a5e67b5b442a039b4ce7a81cfc708b1e3.html)
