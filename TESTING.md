@@ -9,12 +9,12 @@ Define local paths and paths within iRODS.
 ```bash
 REPO=~/irods_module_iplant # Example local directory for cloned git repository.
 IRODS=~/iRODS # Example local root directory for iRODS installation.
+IPLANT=/tempZone/home/rods/iplant # Example iRODS directory to save iplant data.
 ITMP_IPLANT=/tempZone/tmp/iplant # Example iRODS directory to save temporary files.
 imkdir -p $ITMP_IPLANT # Create iRODS temporary directory.
 TMP_IPLANT=/tmp/iplant # Example local directory to save tempoary files.
 mkdir -p $TMP_IPLANT # Create local temporary directory.
 IPLANT_LOG=/tmp/iplant/iplant.log # Example local path to save iPlant log file.
-IPLANT=/tempZone/home/rods/iplant # Example iRODS directory to save iplant data.
 ```
 
 ## Test iRODS temporary directory
@@ -34,13 +34,13 @@ date
 
 ## Test `iplant.py` with command line arguments
 
-Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly. For this test, avoid invoking rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. Also see `iplant.py --help` to test additional `iplant.py` options.
+Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly. For this test, avoid invoking rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. See `iplant.py --help` to test additional `iplant.py` options.
 
 ```bash
 date
 iput $REPO/iplant/test/test1.fastq $ITMP_IPLANT/.
-$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --action compress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
-$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --action decompress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
+$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action compress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
+$IRODS/server/bin/cmd/iplant.py --ipath $ITMP_IPLANT/test1.fastq --iplant $IPLANT --action decompress --itmp_iplant $ITMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 irm -f $ITMP_IPLANT/test1.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
@@ -49,7 +49,7 @@ date
 
 ## Test `iplant.py` with iRODS icommands
 
-Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when invoked by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. Also see `iplant.py --help` to test additional `iplant.py` options.
+Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when invoked by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. See `iplant.py --help` to test additional `iplant.py` options.
 
 ```bash
 date
@@ -64,8 +64,7 @@ date
 
 ## Notes
 
-- `iplant.py` creates parent directories as needed for `--log_file $IPLANT_LOG`. See `iplant.py --help`
-- `iplant.py` uses the standard Python library `tempfile.tempdir` to defien the temporary directory from the environment [1]_.
+- `iplant.py` creates parent directories as needed `--itmp_iplant`, `--tmp_iplant`, `--log_file`.
 
 ## References
 
