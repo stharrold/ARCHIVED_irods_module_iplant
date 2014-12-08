@@ -1,6 +1,6 @@
 # INSTALL
 
-Example installation. See [TESTING.md](TESTING.md) to complete installation and check.
+Example installation. See [TESTING.md](TESTING.md) to complete installation and test.
 
 ## Download and copy
 
