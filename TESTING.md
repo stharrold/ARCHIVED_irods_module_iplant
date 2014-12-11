@@ -55,8 +55,6 @@ date
 
 ## Test `iplant.py` with automatic calls from iRODS
 
-**NOTE:** As of 2014-12-08, this test fails due to `acPreprocForDataObjOpen` not working with `ON($objPath like ...)`. A workaround to test that a file is a within a parent directory causes concurrency problems for iRODS and truncates file output for `iget`.
-
 Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when called by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. See `iplant.py --help` to test additional `iplant.py` options.
 
 ```bash
