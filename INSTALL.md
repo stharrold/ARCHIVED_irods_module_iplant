@@ -33,7 +33,7 @@ reRuleSet   core,iplant
 
 ## Backup and edit `core.re`
 
-Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `$IRODS/server/config/reConfigs/iplant.re`. Replace `ON($objPath like /path/to/your/iplant)` with the path to your collection:  
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `$IRODS/server/config/reConfigs/iplant.re`. Replace `/path/to/your/iplant` with the path to your collection:  
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
