@@ -274,6 +274,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         # Move data to temporary files, record metadata on uncompressed version, then compress.
         # NOTE: Use imv instead of icp to move data from/to `ipath` since icp will invoke acPreprocForDataObjOpen/acPostProcForCopy.
         # NOTE: Copy compressed file within `itmp_path` to leave trace of files for debugging.
+        # TODO: Accommodate other compression methods and add flag option to arguments.
         # TODO: Remove "copy compressed file" step for optimization when robustly tested.
         # TODO: Check space to move to tmp local, delete oldest files that sum to size.
         logger.debug("compress: imv {src} {dst}".format(src=ipath, dst=itmp_path))
