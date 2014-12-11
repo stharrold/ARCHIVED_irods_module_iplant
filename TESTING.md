@@ -47,7 +47,7 @@ $IRODS/server/bin/cmd/iplant.py --ipath $IPLANT/test1.fastq --iplant $IPLANT --a
 irsync -r i:$IPLANT $TMP_IPLANT
 diff $REPO/iplant/test $TMP_IPLANT # Only $TMP_IPLANT has iplant.log. test1.fastq and test2.fastq should be common to both directories and identical.
 irm -f $IPLANT/test1.fastq $IPLANT/test2.fastq
-rm -f $TMP_IPLANT/*.fastq
+rm -f $TMP_IPLANT/test1.fastq $TMP_IPLANT/test2.fastq
 date
 # Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 # Use the iPlant version of core.re from after following INSTALL.md.
