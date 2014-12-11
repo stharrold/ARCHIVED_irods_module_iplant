@@ -60,7 +60,7 @@ date
 Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when called by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. See `iplant.py --help` to test additional `iplant.py` options.
 
 ```bash
-# Use the iPlant version of core.re from following INSTALL.md.
+# Use the iPlant version of `core.re` from following `INSTALL.md`.
 date
 irsync -r $REPO/iplant/test i:$IPLANT
 irsync -r i:$IPLANT $TMP_IPLANT
