@@ -62,11 +62,11 @@ Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when c
 ```bash
 # Use the iPlant version of `core.re` from following `INSTALL.md`.
 date
-irsync -r $REPO/iplant/test i:$IPLANT
-irsync -r i:$IPLANT $TMP_IPLANT
-diff $REPO/iplant/test $TMP_IPLANT # Only $TMP_IPLANT has iplant.log. test1.fastq and test2.fastq should be common to both directories and identical.
-irm -f $IPLANT/test1.fastq $IPLANT/test2.fastq
-rm -f $TMP_IPLANT/*.fastq
+iput $REPO/iplant/test/test1.fastq $IPLANT/.
+iget $IPLANT/test1.fastq $TMP_IPLANT/.
+diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1.fastq
+irm -f $IPLANT/test1.fastq
+rm -f $TMP_IPLANT/test1.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
 # Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
