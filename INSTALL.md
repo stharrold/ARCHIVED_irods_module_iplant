@@ -33,7 +33,7 @@ reRuleSet   core,iplant
 
 ## Backup and edit `core.re`
 
-Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `$IRODS/server/config/reConfigs/iplant.re`:  
+Backup and edit `$IRODS/server/config/reConfigs/core.re` to call rules from `$IRODS/server/config/reConfigs/iplant.re`. Replace `/path/to/your/iplant` with the path to your collection:  
 ```bash
 cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 ```
@@ -41,25 +41,31 @@ cp $IRODS/server/config/reConfigs/core.re $IRODS/server/config/reConfigs/core.re
 # ORIGINAL:
 # acPreprocForDataObjOpen { }
 # IPLANT:
-acPreprocForDataObjOpen { iplantPreprocForDataObjOpen; }
+acPreprocForDataObjOpen {ON($objPath like "/path/to/your/iplant/*") {iplantPreprocForDataObjOpen;}}
+acPreprocForDataObjOpen { }
 # ORIGINAL:
 # acPostProcForPut { }
 # IPLANT:
-acPostProcForPut { iplantPostProcForPut; }
+acPostProcForPut {ON($objPath like "/path/to/your/iplant/*") {iplantPostProcForPut;}}
+acPostProcForPut { }
 # ORIGINAL:
 # acPostProcForOpen { }
 # IPLANT:
-acPostProcForOpen { iplantPostProcForOpen; }
+acPostProcForOpen {ON($objPath like "/path/to/your/iplant/*") {iplantPostProcForOpen;}}
+acPostProcForOpen { }
 # ORIGINAL:
 # acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("off"); }
 # IPLANT:
 acBulkPutPostProcPolicy { msiSetBulkPutPostProcPolicy("on"); }
+acBulkPutPostProcPolicy { }
 ```
 
 ## Notes
 
-  - As of 2014-10-11, for iRODS v3.3.1, rules files must be copied by hand (see [iRODS forum post: "module rules target", 2010](https://groups.google.com/forum/#!searchin/irod-chat/module$20rules/irod-chat/gaBSUd0QyiQ/ECKUNLPF5ooJ)). Future iRODS releases may automatically link rules files in modules.
-  - As of 2014-10-11, [iplant](iplant) does not contain microservices and does not need to be compiled as per [iRODS v3.3.1 docs: How to create a new module](https://wiki.irods.org/index.php/How_to_create_a_new_module).
+- The `iplant.py` `--iplant` option prevents accidentally invoking `iplant.py` in an infinite loop.
+- The `core.re` rules without arguments permit the default rule to be called for files not part of the iPlant collection.
+- As of 2014-10-11, for iRODS v3.3.1, rules files must be copied by hand (see [iRODS forum post: "module rules target", 2010](https://groups.google.com/forum/#!searchin/irod-chat/module$20rules/irod-chat/gaBSUd0QyiQ/ECKUNLPF5ooJ)). Future iRODS releases may automatically link rules files in modules.
+- As of 2014-10-11, [iplant](iplant) does not contain microservices and does not need to be compiled as per [iRODS v3.3.1 docs: How to create a new module](https://wiki.irods.org/index.php/How_to_create_a_new_module).
 
 ## References
 
