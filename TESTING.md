@@ -41,13 +41,13 @@ Test that the `$IRODS/server/bin/cmd/iplant.py` module is executes correctly whe
 ```
 # Use the original version of `core.re` from before following `INSTALL.md`: $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 date
-irsync -r $REPO/iplant/test i:$IPLANT
+iput $REPO/iplant/test/test1.fastq $IPLANT/.
 $IRODS/server/bin/cmd/iplant.py --ipath $IPLANT/test1.fastq --iplant $IPLANT --action compress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
 $IRODS/server/bin/cmd/iplant.py --ipath $IPLANT/test1.fastq --iplant $IPLANT --action decompress --itmp_iplant $ITMP_IPLANT --tmp_iplant $TMP_IPLANT --delete_itmp_files --delete_tmp_files --logging_level DEBUG --log_file $IPLANT_LOG
-irsync -r i:$IPLANT $TMP_IPLANT
-diff $REPO/iplant/test $TMP_IPLANT # Only $TMP_IPLANT has iplant.log. test1.fastq and test2.fastq should be common to both directories and identical.
-irm -f $IPLANT/test1.fastq $IPLANT/test2.fastq
-rm -f $TMP_IPLANT/test1.fastq $TMP_IPLANT/test2.fastq
+iget $IPLANT/test1.fastq $TMP_IPLANT/.
+diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1.fastq
+irm -f $IPLANT/test1.fastq
+rm -f $TMP_IPLANT/test1.fastq
 date
 # Read `$IPLANT_LOG` between the timestamps from `date` to check execution.
 # Replace `core.re` with the iPlant version from after following `INSTALL.md`.
