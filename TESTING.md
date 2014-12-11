@@ -28,7 +28,7 @@ icp $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_copied.fastq
 imv $ITMP_IPLANT/test1_copied.fastq $ITMP_IPLANT/test1.fastq
 iget $ITMP_IPLANT/test1.fastq $TMP_IPLANT/.
 diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1.fastq
-irm -f $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1.fastq
+irm -f $ITMP_IPLANT/test1.fastq
 rm -f $TMP_IPLANT/test1.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
