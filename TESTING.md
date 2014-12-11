@@ -25,11 +25,11 @@ Test that iRODS icommands execute in the user-defined iRODS temporary directory 
 date
 iput $REPO/iplant/test/test1.fastq $ITMP_IPLANT/.
 icp $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_copied.fastq
-imv $ITMP_IPLANT/test1_copied.fastq $ITMP_IPLANT/test1.fastq
-iget $ITMP_IPLANT/test1.fastq $TMP_IPLANT/.
-diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1.fastq
-irm -f $ITMP_IPLANT/test1.fastq
-rm -f $TMP_IPLANT/test1.fastq
+imv $ITMP_IPLANT/test1_copied.fastq $ITMP_IPLANT/test1_moved.fastq
+iget $ITMP_IPLANT/test1_moved.fastq $TMP_IPLANT/.
+diff $REPO/iplant/test/test1.fastq $TMP_IPLANT/test1_moved.fastq
+irm -f $ITMP_IPLANT/test1.fastq $ITMP_IPLANT/test1_moved.fastq
+rm -f $TMP_IPLANT/test1_moved.fastq
 date
 # Read `$IRODS/server/log/rodsLog.YYYY.MM.DD` between the timestamps from `date` to check execution.
 ```
