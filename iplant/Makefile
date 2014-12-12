@@ -2,7 +2,8 @@
 # modules/iplant/Makefile
 #
 # Build the iRODS iplant module
-#
+# NOTE: As of 2014-11-14, no makefile is necessary for iplant.
+# This file is a placeholder.
 
 #========================================
 # # Example below from iRODS/modules/properties/Makefile
