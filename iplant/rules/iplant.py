@@ -284,8 +284,10 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         logger.debug("compress: uncompressed_size = os.path.getsize({tmp_path})".format(tmp_path=tmp_path))
         uncompressed_size = os.path.getsize(tmp_path)
         logger.debug("compress: uncompressed_size = {usize}".format(usize=uncompressed_size))
-        logger.debug("compress: uncompressed_hash = _compute_hash({tmp_path})".format(tmp_path=tmp_path))
-        uncompressed_hash = _compute_hash(fpath=tmp_path)
+        hash_method = 'SHA1'
+        logger.debug(("compress: uncompressed_hash = _compute_hash(fpath={tmp_path}, " +
+                      "algorithm={hm})").format(tmp_path=tmp_path, hm=hash_method))
+        uncompressed_hash = _compute_hash(fpath=tmp_path, algorithm=hash_method)
         logger.debug("compress: uncompressed_hash = {uhash}".format(uhash=uncompressed_hash))
         logger.debug("compress: gzip --fast --force --keep {tmp_path}".format(tmp_path=tmp_path))
         subprocess.check_output(["gzip", "--fast", "--force", "--keep", tmp_path])
@@ -302,7 +304,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
                           ('COMPRESSION_METHOD', 'GZIP', 'NONE'),
                           ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
                           ('UNCOMPRESSED_HASH', uncompressed_hash, 'NONE'),
-                          ('HASH_METHOD', 'SHA1', 'NONE'),
+                          ('HASH_METHOD', hash_method, 'NONE'),
                           ('PARENT_FILE', itmp_path, 'NONE'),
                           ('COMMENTS', comments, 'NONE')]
         imeta_triplets = [[str(elt) for elt in triplet] for triplet in imeta_triplets]
@@ -424,9 +426,9 @@ def decompress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_t
             logger.debug("decompress: uncompressed_hash = {uhash}".format(uhash=uncompressed_hash))
             uncompressed_hash_imeta = imeta_dict['UNCOMPRESSED_HASH']['value']
             if uncompressed_hash == uncompressed_hash_imeta:
-                logger.debug("decompress: Uncompressed hash size matches 'UNCOMPRESSED_HASH' from imeta.")
+                logger.debug("decompress: Uncompressed hash matches 'UNCOMPRESSED_HASH' from imeta.")
             else:
-                logger.error(("decompress: Uncompressed hash size does not match 'UNCOMPRESSED_HASH' from imeta.\n" +
+                logger.error(("decompress: Uncompressed hash does not match 'UNCOMPRESSED_HASH' from imeta.\n" +
                               "HASH_METHOD from file and imeta = {hmeth_im}\n" +
                               "uncompressed_hash from file     = {uhash}\n" +
                               "UNCOMPRESSED_HASH from imeta    = {uhash_im}").format(hmeth_im=hash_method_imeta,
