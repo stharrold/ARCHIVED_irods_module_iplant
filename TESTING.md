@@ -57,7 +57,7 @@ date
 
 Test that the `$IRODS/server/bin/cmd/iplant.py` module executes correctly when called by rules from `$IRODS/server/config/reConfigs/core.re` and `$IRODS/server/config/reConfigs/iplant.re`. See `iplant.py --help` to test additional `iplant.py` options.
 
-**Note:** As of 2014-12-11, this test fails because the last file fetched is cut short. See issue https://github.com/stharrold/irods_module_iplant/issues/16
+**Note:** As of 2014-12-11, this test fails because the last file fetched is truncated. See issue https://github.com/stharrold/irods_module_iplant/issues/16
 
 ```bash
 # Use the iPlant version of `core.re` from following `INSTALL.md`.
