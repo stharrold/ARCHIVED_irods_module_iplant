@@ -38,7 +38,7 @@ date
 
 Test that the `$IRODS/server/bin/cmd/iplant.py` module is executes correctly when called from the command line for multiple files. Use the original version of `$IRODS/server/config/reConfigs/core.re` from before following [INSTALL.md](INSTALL.md) to avoid automatic calls from iRODS. See `iplant.py --help` to test additional `iplant.py` options.
 
-```
+```bash
 # Use the original version of `core.re` from before following `INSTALL.md`: $IRODS/server/config/reConfigs/core.re_BACKUP_YYYYMMDDTHHMMSS
 date
 iput $REPO/iplant/test/test1.fastq $IPLANT/.
