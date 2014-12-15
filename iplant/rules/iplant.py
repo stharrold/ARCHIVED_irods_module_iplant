@@ -299,7 +299,7 @@ def compress(ipath, itmp_iplant, tmp_iplant, delete_itmp_files=False, delete_tmp
         logger.debug("compress: imv {src} {dst}".format(src=itmp_path_gz_copy, dst=ipath))
         subprocess.check_output(["imv", itmp_path_gz_copy, ipath])
         # Set metadata describing compression state. Metadata must be converted to strings.
-        comments = "'This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz. This file will be decompressed upon retrieval (e.g. with iget, isync).'"
+        comments = "'This file is registered under the extension .fastq but is stored internally to iRODS with compression as .fastq.gz. This file will be decompressed upon retrieval (e.g. with iget).'"
         imeta_triplets = [('IS_COMPRESSED', 'TRUE', 'BOOL'),
                           ('COMPRESSION_METHOD', 'GZIP', 'NONE'),
                           ('UNCOMPRESSED_SIZE', uncompressed_size, 'BYTES'),
